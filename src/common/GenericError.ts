@@ -48,11 +48,14 @@ export class GenericError extends Error {
         }
     }
 
-    public toJSON(): { code: string, message: string } {
+    public toJSON(): { code: string, message: string, meta?: any } {
+
         return {
             code: this.code,
             message: this.message,
+            ...(this.meta ? { meta: this.meta } : {}),
         };
+
     }
 
 }

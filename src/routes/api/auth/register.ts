@@ -24,11 +24,15 @@ router.post(
     validation,
     ensureNoValidationErrors,
     UserController.createUser,
+
+    // TODO: Update this to return the 'user' JSON payload,
+    // and not redirect.
     passport.authenticate('local', {
         successRedirect: '/',
         failureRedirect: '/login',
         failureFlash: true,
     })
+
 );
 
 export { router as registerRouter };

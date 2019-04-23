@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express-serve-static-core';
 import { validationResult } from 'express-validator/check';
 import { GenericError } from '../../common/GenericError';
-import { AuthenticationErrorCode } from '../../constants/error_codes';
+import { AuthenticationErrorCode, ValidationErrorCode } from '../../constants/error_codes';
 
 export const ensureNoValidationErrors: RequestHandler = (req, res, next) => {
 
@@ -14,8 +14,9 @@ export const ensureNoValidationErrors: RequestHandler = (req, res, next) => {
     return res
         .status(422)
         .json(new GenericError({
-            code: AuthenticationErrorCode.NOT_AUTHORIZED,
-            message: "You're not authorized to access that resource",
+            code: ValidationErrorCode.INVALID_PAYLOAD,
+            message: 'Invalid payload',
+            meta: errors.array(),
         }));
 
 };

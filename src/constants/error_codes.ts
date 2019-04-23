@@ -9,3 +9,7 @@ export enum DatabaseServiceErrorCode {
     UNKNOWN_ERROR = 'UNKNOWN_ERROR',
     RECORD_NOT_FOUND = 'RECORD_NOT_FOUND',
 }
+
+export enum ValidationErrorCode {
+    INVALID_PAYLOAD = 'INVALID_PAYLOAD'
+}
