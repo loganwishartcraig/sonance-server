@@ -1,0 +1,19 @@
+{
+    "env": {
+        "NODE_ENV": "development",
+        "TS_NODE_PROJECT": "tsconfig.dev.json"
+    },
+    "ext": "ts",
+    "restartable": "rs",
+    "ignore": [
+        ".git",
+        "node_modules/**/node_modules"
+    ],
+    "watch": [
+        "src/"
+    ],
+    "verbose": true,
+    "execMap": {
+        "ts": "node --inspect --require ts-node/register"
+    }
+}

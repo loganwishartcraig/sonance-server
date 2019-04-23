@@ -1,10 +1,8 @@
-import express from 'express';
+import { Express } from 'express';
+import { registerApiRoutes } from './api';
+import { registerResourceRoutes } from './resources';
 
-const router = express.Router();
-
-/* GET home page. */
-router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Express' });
-});
-
-export default router;
+export const registerRoutes = (app: Express) => {
+    registerApiRoutes(app);
+    registerResourceRoutes(app);
+}

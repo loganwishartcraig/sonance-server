@@ -5,7 +5,8 @@
  */
 
 import app from '../app';
-import http from 'http';
+import https from 'https';
+import fs from 'fs';
 import _debug from 'debug';
 import { HttpError } from 'http-errors';
 import { AddressInfo } from 'net';
@@ -23,7 +24,10 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
+const server = https.createServer({
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.cert')
+}, app);
 
 /**
  * Listen on provided port, on all network interfaces.
