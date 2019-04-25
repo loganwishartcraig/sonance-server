@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { RequestHandler, Router } from 'express';
 import { check } from 'express-validator/check';
 import { UserController } from '../../../controllers/user';
 import { ensureNoValidationErrors } from '../../../middleware/validation/auth';
@@ -19,20 +19,28 @@ export const validation = [
         .isLength({ min: 1 }),
 ];
 
+const authenticator: RequestHandler = (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+
+        if (err) {
+            return next(err);
+        }
+
+        req.logIn(user, (loginErr) => {
+            if (loginErr) return next(loginErr);
+            return res.status(200).json({ user });
+        });
+
+    })(req, res, next);
+};
+
 router.post(
     '/register',
     validation,
     ensureNoValidationErrors,
     UserController.createUser,
-
-    // TODO: Update this to return the 'user' JSON payload,
-    // and not redirect.
-    passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/login',
-        failureFlash: true,
-    })
-
+    authenticator
 );
 
 export { router as registerRouter };
+
