@@ -16,6 +16,7 @@ const handleDatabaseError = (...args: any[]) => {
     console.error('[Database] - Error encountered - ', ...args);
 };
 
+// TODO: Allow connection consumers to reject promises if connection fails
 connection.on('error', handleDatabaseError);
 
 export const userService = new UserService(connection);
