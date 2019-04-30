@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express-serve-static-core';
 import { validationResult } from 'express-validator/check';
 import { GenericError } from '../../common/GenericError';
-import { AuthenticationErrorCode, ValidationErrorCode } from '../../constants/error_codes';
+import { ValidationErrorCode } from '../../constants/error_codes';
 
 export const ensureNoValidationErrors: RequestHandler = (req, res, next) => {
 
