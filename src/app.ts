@@ -7,12 +7,15 @@ import createError from 'http-errors';
 import logger from 'morgan';
 import sassMiddleware from 'node-sass-middleware';
 import path from 'path';
-import { localStrategy } from './middleware/authentication';
 import { IUser } from './models/User';
-import { userService } from './services/Index';
 
 import passport = require('passport');
 import { registerRoutes } from './routes';
+import { GenericError } from './common/GenericError';
+import { DatabaseServiceErrorCode } from './constants/error_codes';
+import { wrapCatch } from './common/Utilities';
+import { localStrategy } from './strategies/local';
+import { userService } from './services';
 
 require('dotenv').config();
 
@@ -46,6 +49,8 @@ app.use(session({
 }
 ));
 
+// Passport.js config
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -54,15 +59,23 @@ passport.serializeUser((user: IUser, done) => {
   done(null, user.email);
 });
 
-passport.deserializeUser(async (email: string, done) => {
-  try {
+passport.deserializeUser(wrapCatch(
+  async (email: string, done: (err: any, user?: IUser) => void) => {
+
     const user = await userService.findByEmail(email);
+
+    if (!user) {
+      throw new GenericError({
+        httpStatus: 422,
+        code: DatabaseServiceErrorCode.RECORD_NOT_FOUND,
+        message: 'User not found',
+      });
+    }
+
     done(null, user);
-  } catch (e) {
-    console.error('error deserializing user');
-    done(e);
-  }
-});
+
+  })
+);
 
 registerRoutes(app);
 
@@ -74,13 +87,20 @@ const notFoundHandler: RequestHandler = (req, res, next) => {
 app.use(notFoundHandler);
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  if (err instanceof GenericError) {
+    console.warn('Caught error!', err);
+    res.status(err.httpStatus).json(err.toJSON());
+  } else {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+  }
+
 };
 
 // error handler

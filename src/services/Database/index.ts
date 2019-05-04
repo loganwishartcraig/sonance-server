@@ -1,6 +1,4 @@
-import { Connection, Model, Document, QueryFindOneAndUpdateOptions } from 'mongoose';
-import { GenericError } from '../../common/GenericError';
-import { DatabaseServiceErrorCode } from '../../constants/error_codes';
+import { Connection, Document, Model, QueryFindOneAndUpdateOptions } from 'mongoose';
 
 export interface IDatabaseServiceConfig {
     readonly connection: Connection;
@@ -59,18 +57,13 @@ export class DatabaseService<ModelType = any> implements
 
     }
 
-    public async findOne<QueryShape extends Object>(query: QueryShape): Promise<ModelType> {
+    public async findOne<QueryShape extends Object>(query: QueryShape): Promise<ModelType | undefined> {
 
         await this._ready;
 
         const result = await this._model.findOne(query).exec();
 
-        if (!result) {
-            throw new GenericError({
-                code: DatabaseServiceErrorCode.RECORD_NOT_FOUND,
-                message: 'Record not found',
-            });
-        } else {
+        if (result) {
             return result.toObject();
         }
 

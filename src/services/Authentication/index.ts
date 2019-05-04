@@ -7,6 +7,11 @@ import { IRestrictedDatabaseService } from '../Database';
 import { PasswordHashService } from './PasswordHash';
 import { PasswordSaltService } from './PasswordSalt';
 
+export interface IAuthenticationService {
+    validateCredentials({ email, password }: IAuthenticationRequest): Promise<boolean>;
+    setCredentials({ email, password }: IAuthenticationRequest): Promise<void>;
+}
+
 interface ISerializedHash {
     readonly salt: string;
     readonly hash: string;
@@ -17,7 +22,7 @@ export interface IAuthenticationRequest {
     readonly password: string;
 }
 
-export class AuthenticationService {
+export class AuthenticationService implements IAuthenticationService {
 
     private readonly _passwordHashService: IRestrictedDatabaseService<IPasswordHash>;
     private readonly _passwordSaltService: IRestrictedDatabaseService<IPasswordSalt>;

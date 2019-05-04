@@ -8,6 +8,7 @@ export enum AuthenticationErrorCode {
 export enum DatabaseServiceErrorCode {
     UNKNOWN_ERROR = 'UNKNOWN_ERROR',
     RECORD_NOT_FOUND = 'RECORD_NOT_FOUND',
+    RECORD_ALREADY_EXISTS = 'RECORD_ALREADY_EXISTS'
 }
 
 export enum ValidationErrorCode {

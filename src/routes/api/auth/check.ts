@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { AuthenticationController } from '../../../controllers/authentication';
+import authController from '../../../controllers/authentication';
 
 const router = Router();
 
 router.get(
     '/check',
-    AuthenticationController.checkAuth
+    authController.checkAuth
 );
 
 export { router as checkRouter };

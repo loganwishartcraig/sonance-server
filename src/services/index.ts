@@ -1,6 +1,6 @@
 import { createConnection } from 'mongoose';
-import { AuthenticationService } from './Authentication';
-import { UserService } from './User';
+import { AuthenticationService, IAuthenticationService } from './Authentication';
+import { UserService, IUserService } from './User';
 require('dotenv').config();
 
 const enum DatabaseName {
@@ -20,4 +20,7 @@ const handleDatabaseError = (...args: any[]) => {
 connection.on('error', handleDatabaseError);
 
 export const userService = new UserService(connection);
-export const authenticationService = new AuthenticationService(connection);
+export const authService = new AuthenticationService(connection);
+
+export { IAuthenticationService };
+export { IUserService };

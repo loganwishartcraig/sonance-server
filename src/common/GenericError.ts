@@ -1,12 +1,14 @@
 interface IGenericError {
     readonly code: string;
     readonly message: string;
+    readonly httpStatus: number;
     readonly meta?: any;
 }
 
-export class GenericError extends Error {
+export class GenericError extends Error implements IGenericError {
 
     public readonly code: string;
+    public readonly httpStatus: number;
     public readonly message: string;
     public readonly stack: string;
     public readonly meta: any;
@@ -14,6 +16,7 @@ export class GenericError extends Error {
     constructor(config: IGenericError) {
         super(config.code);
         this.code = config.code;
+        this.httpStatus = config.httpStatus;
         this.message = config.message;
         this.stack = this._resolveStack();
         this.meta = config.meta;

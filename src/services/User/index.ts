@@ -1,9 +1,9 @@
 import { Connection } from 'mongoose';
 import { buildUserModel, IUser, IUserSchema } from '../../models/User';
-import { DatabaseService } from '../Database';
+import { DatabaseService, IDatabaseService } from '../Database';
 
-export interface IUserService {
-    readonly connection: Connection;
+export interface IUserService extends IDatabaseService {
+    findByEmail(email: string): Promise<IUser | undefined>;
 }
 
 export interface IUserCreate {
@@ -12,7 +12,7 @@ export interface IUserCreate {
     readonly nameLast: string;
 }
 
-export class UserService extends DatabaseService<IUser> {
+export class UserService extends DatabaseService<IUser> implements IUserService {
 
     constructor(connection: Connection) {
         super({
@@ -21,7 +21,7 @@ export class UserService extends DatabaseService<IUser> {
         });
     }
 
-    public async findByEmail(email: string): Promise<IUser> {
+    public async findByEmail(email: string): Promise<IUser | undefined> {
         return this.findOne({ email });
     }
 
