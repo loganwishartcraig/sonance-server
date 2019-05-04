@@ -91,6 +91,7 @@ export class DatabaseService<ModelType = any> implements
         const options: QueryFindOneAndUpdateOptions = {
             upsert: true,
             setDefaultsOnInsert: true,
+            new: true,
         };
 
         const record = await this._model.findOneAndUpdate(query, insertionPayload, options).exec();
