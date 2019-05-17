@@ -1,8 +1,8 @@
 import argon2 from 'argon2';
 import crypto from 'crypto';
-import { IPasswordHash, INewPasswordHashConfig } from '../../models/PasswordHash';
-import { IPasswordSalt, INewPasswordSaltConfig } from '../../models/PasswordSalt';
-import { IRestrictedDatabaseService } from '../Database';
+
+import { IPasswordHashService } from './PasswordHash';
+import { IPasswordSaltService } from './PasswordSalt';
 
 export interface IAuthenticationService {
     validateCredentials({ email, password }: IAuthenticationRequest): Promise<boolean>;
@@ -20,14 +20,14 @@ export interface IAuthenticationRequest {
 }
 
 export interface IAuthenticationServiceConfig {
-    passwordHashService: IRestrictedDatabaseService<IPasswordHash>;
-    passwordSaltService: IRestrictedDatabaseService<IPasswordSalt>;
+    passwordHashService: IPasswordHashService;
+    passwordSaltService: IPasswordSaltService;
 }
 
 export class AuthenticationService implements IAuthenticationService {
 
-    private readonly _passwordHashService: IRestrictedDatabaseService<IPasswordHash>;
-    private readonly _passwordSaltService: IRestrictedDatabaseService<IPasswordSalt>;
+    private readonly _passwordHashService: IPasswordHashService;
+    private readonly _passwordSaltService: IPasswordSaltService;
 
     private readonly _prehashSecret: string = process.env.PASSWORD_PREHASH_SECRET as string;
 
@@ -67,14 +67,11 @@ export class AuthenticationService implements IAuthenticationService {
 
         const { hash, salt } = await this._resolveSerializedHash(password);
 
-        const hashPayload: INewPasswordHashConfig = { email, hash };
-        const saltPayload: INewPasswordSaltConfig = { email, salt };
-
         const query = { email };
 
         await Promise.all([
-            this._passwordHashService.upsert(query, hashPayload),
-            this._passwordSaltService.upsert(query, saltPayload),
+            this._passwordHashService.upsert(query, { email, hash }),
+            this._passwordSaltService.upsert(query, { email, salt }),
         ]);
 
     }

@@ -1,5 +1,5 @@
-import { Connection, Document, Model, Schema, Mongoose, SchemaTypeOpts } from 'mongoose';
-import { IUser, USER_MODEL_NAME } from '../User';
+import { Connection, Document, Model, Schema, SchemaTypeOpts } from 'mongoose';
+import { USER_MODEL_NAME } from '../User';
 import { Optional } from '../../common/types';
 
 export enum BillStatus {

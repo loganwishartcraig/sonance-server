@@ -3,13 +3,14 @@ import { userService, IUserService } from '../../services';
 import { GenericError } from '../../common/GenericError';
 import { wrapCatch } from '../../common/Utilities';
 import { DatabaseServiceErrorCode } from '../../constants/error_codes';
+import { INewUserConfig } from '../../models/User';
 
 class UserController {
 
     private readonly _userService: IUserService;
 
     constructor(service: IUserService) {
-        this._userService = userService;
+        this._userService = service;
     }
 
     public createUser: RequestHandler = wrapCatch(async (req, res, next) => {
@@ -22,11 +23,26 @@ class UserController {
             });
         }
 
-        await this._userService.insert(req.body);
+        const creationConf = this._parseBodyForCreation(req.body);
+
+        await this._userService.insert(creationConf);
 
         next();
 
     });
+
+    /**
+     * Serialize the request body here, stripping extra properties.
+     * Express-validator doesn't support throwing on non-validated props.
+     * We don't check prop validity here, it should be done prior to calling.
+     */
+    private _parseBodyForCreation({
+        email,
+        firstName,
+        lastName,
+    }: any): INewUserConfig {
+        return { email, firstName, lastName };
+    }
 
 }
 

@@ -1,8 +1,12 @@
 import { Connection } from 'mongoose';
-import { buildPasswordSaltModel, IPasswordSalt } from '../../../models/PasswordSalt';
-import { DatabaseService } from '../../Database';
+import { buildPasswordSaltModel, IPasswordSalt, INewPasswordSaltConfig } from '../../../models/PasswordSalt';
+import { DatabaseService, IDatabaseService } from '../../Database';
 
-export class PasswordSaltService extends DatabaseService<IPasswordSalt> {
+export type IPasswordSaltService = IDatabaseService<IPasswordSalt, INewPasswordSaltConfig>;
+
+export class PasswordSaltService
+    extends DatabaseService<IPasswordSalt, INewPasswordSaltConfig>
+    implements IPasswordSaltService {
 
     constructor(connection: Connection) {
         super({
