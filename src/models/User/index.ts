@@ -13,6 +13,8 @@ export interface IUserSchema {
     readonly email: string;
 }
 
+export const USER_MODEL_NAME: string = 'User';
+
 export const TEST_USER: IUser = {
     id: '1',
     email: 'test_email@test.com',
@@ -25,8 +27,6 @@ export const userSchema = new Schema({
     lastName: { type: String, required: true, },
     email: { type: String, required: true, index: true },
 });
-
-export const USER_MODEL_NAME: string = 'User';
 
 export const buildUserModel = (connection: Connection) =>
     connection.model<Document, Model<Document, IUser>>('User', userSchema);

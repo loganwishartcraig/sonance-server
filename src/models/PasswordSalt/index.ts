@@ -10,12 +10,12 @@ export interface IPasswordSaltSchema {
     readonly salt: string;
 }
 
+export const PASSWORD_SALT_MODEL_NAME: string = 'PasswordSalt';
+
 export const passwordSaltSchema = new Schema({
     email: { type: String, required: true },
     salt: { type: String, required: true },
 });
-
-export const PASSWORD_SALT_MODEL_NAME: string = 'PasswordSalt';
 
 export const buildPasswordSaltModel = (connection: Connection) =>
     connection.model(PASSWORD_SALT_MODEL_NAME, passwordSaltSchema);
