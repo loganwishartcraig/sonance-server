@@ -1,22 +1,19 @@
 import { Connection, Document, Model, Schema } from 'mongoose';
+import { Omit } from '../../common/types';
 
 export interface IUser {
-    readonly id: string;
+    readonly _id: string;
     readonly email: string;
     readonly firstName: string;
     readonly lastName: string;
 }
 
-export interface IUserSchema {
-    readonly firstName: string;
-    readonly lastName: string;
-    readonly email: string;
-}
+export type INewUserConfig = Omit<IUser, '_id'>;
 
 export const USER_MODEL_NAME: string = 'User';
 
 export const TEST_USER: IUser = {
-    id: '1',
+    _id: '1',
     email: 'test_email@test.com',
     firstName: 'F_Test',
     lastName: 'L_Test',

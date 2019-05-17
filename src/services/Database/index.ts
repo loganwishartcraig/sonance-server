@@ -38,7 +38,7 @@ export type TypeSafeSchemaValueMap<ModelSchema> = {
 // DatabaseService implements both IDatabaseService/IRestrictedDatabaseService
 // for convenience. This allows password services to extend this class but
 // still just leverage the IRestrictedDatabaseService interface.
-export class DatabaseService<ModelType = any, ModelSchema = {}> implements
+export class DatabaseService<ModelType = any> implements
     IDatabaseService<ModelType>,
     IRestrictedDatabaseService<ModelType>
 {
@@ -55,7 +55,7 @@ export class DatabaseService<ModelType = any, ModelSchema = {}> implements
         this._connection.on('error', this._handleConnectionError);
     }
 
-    public async find<QueryShape extends TypeSafeSchemaValueMap<ModelSchema>>(query: QueryShape): Promise<ModelType[]> {
+    public async find<QueryShape extends TypeSafeSchemaValueMap<ModelType>>(query: QueryShape): Promise<ModelType[]> {
 
         await this._ready;
 
@@ -65,7 +65,9 @@ export class DatabaseService<ModelType = any, ModelSchema = {}> implements
 
     }
 
-    public async findOne<QueryShape extends {}>(query: QueryShape): Promise<ModelType | undefined> {
+    public async findOne<QueryShape extends TypeSafeSchemaValueMap<ModelType>>(
+        query: QueryShape
+    ): Promise<ModelType | undefined> {
 
         await this._ready;
 
@@ -77,7 +79,9 @@ export class DatabaseService<ModelType = any, ModelSchema = {}> implements
 
     }
 
-    public async insert<PayloadShape extends {}>(payload: PayloadShape): Promise<ModelType> {
+    public async insert<PayloadShape extends TypeSafeSchemaValueMap<ModelType>>(
+        payload: PayloadShape
+    ): Promise<ModelType> {
 
         await this._ready;
 
@@ -88,7 +92,7 @@ export class DatabaseService<ModelType = any, ModelSchema = {}> implements
 
     }
 
-    public async upsert<QueryShape extends Object, PayloadShape extends Object>(
+    public async upsert<QueryShape extends TypeSafeSchemaValueMap<ModelType>, PayloadShape extends Object>(
         query: QueryShape, payload: PayloadShape
     ): Promise<ModelType> {
 
@@ -108,12 +112,12 @@ export class DatabaseService<ModelType = any, ModelSchema = {}> implements
 
     }
 
-    public async removeOne<QueryShape extends Object>(query: QueryShape): Promise<void> {
+    public async removeOne<QueryShape extends TypeSafeSchemaValueMap<ModelType>>(query: QueryShape): Promise<void> {
         await this._ready;
         await this._model.findOneAndRemove().exec();
     }
 
-    public async exists<QueryShape extends Object>(query: QueryShape): Promise<boolean> {
+    public async exists<QueryShape extends TypeSafeSchemaValueMap<ModelType>>(query: QueryShape): Promise<boolean> {
 
         await this._ready;
 

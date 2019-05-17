@@ -1,5 +1,6 @@
 import { Connection, Document, Model, Schema, Mongoose, SchemaTypeOpts } from 'mongoose';
 import { IUser, USER_MODEL_NAME } from '../User';
+import { Optional } from '../../common/types';
 
 export enum BillStatus {
     CANCELLED = -90,
@@ -10,29 +11,15 @@ export enum BillStatus {
 
 export interface IBill {
     readonly publicId: string;
-    readonly name: string;
-    readonly createdOn: Date;
-    readonly createdBy: IUser;
+    readonly createdBy: string;
+    readonly createdOn: string;
     readonly status: BillStatus;
-    readonly statusLastChanged: Date;
-    readonly totalAmount: Number;
+    readonly statusLastChanged: string;
+    readonly name: string;
+    readonly totalAmount: number;
 }
 
-export interface IBillSchema {
-    publicId: string;
-    createdBy: string;
-    createdOn: string;
-    status: BillStatus;
-    statusLastChanged: string;
-    name: string;
-    totalAmount: number;
-}
-
-export interface INewBillConfig {
-    createdBy: string;
-    totalAmount: number;
-    name?: string;
-}
+export type INewBillConfig = Pick<IBill, 'createdBy' | 'totalAmount'> & Optional<IBill, 'name'>;
 
 export const BILL_MODEL_NAME: string = 'Bill';
 
@@ -46,15 +33,22 @@ const validateBillStatus: [SchemaTypeOpts.ValidateFn<BillStatus>, string] = [
     'An invalid bill status cannot be applied.',
 ];
 
-export const billSchema = new Schema<IBillSchema>({
-    publicId: { type: String, required: true },
-    createdBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
-    createdOn: { type: Date, required: true, default: () => new Date() },
-    status: { type: Number, required: true, default: BillStatus.CREATED, validate: validateBillStatus },
-    statusLastChanged: { type: Number, required: true, default: new Date() },
-    name: { type: String },
-    totalAmount: { type: Number, required: true, validate: validateTotalAmount },
-});
+export const billSchema = new Schema<IBill>(
+    {
+        publicId: { type: String, required: true },
+        createdBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
+        createdOn: { type: Date, required: true, default: () => new Date() },
+        status: { type: Number, required: true, default: BillStatus.CREATED, validate: validateBillStatus },
+        statusLastChanged: { type: Number, required: true, default: new Date() },
+        name: { type: String },
+        totalAmount: { type: Number, required: true, validate: validateTotalAmount },
+    },
+    {
+        toObject: {
+            transform: (_doc, ret) => { delete ret._id; },
+        },
+    }
+);
 
 export const buildBillModel = (connection: Connection) =>
     connection.model<Document, Model<Document, IBill>>(BILL_MODEL_NAME, billSchema);

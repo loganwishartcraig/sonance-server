@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import { buildUserModel, IUser, IUserSchema } from '../../models/User';
+import { buildUserModel, IUser, INewUserConfig } from '../../models/User';
 import { DatabaseService, IDatabaseService } from '../Database';
 
 export interface IUserService extends IDatabaseService {
@@ -25,7 +25,7 @@ export class UserService extends DatabaseService<IUser> implements IUserService 
         return this.findOne({ email });
     }
 
-    protected _formatForInsert(payload: IUserCreate): IUserSchema {
+    protected _formatForInsert(payload: IUserCreate): INewUserConfig {
 
         return {
             email: payload.email,

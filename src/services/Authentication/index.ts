@@ -1,11 +1,8 @@
 import argon2 from 'argon2';
 import crypto from 'crypto';
-import { Connection } from 'mongoose';
-import { IPasswordHash, IPasswordHashSchema } from '../../models/PasswordHash';
-import { IPasswordSalt, IPasswordSaltSchema } from '../../models/PasswordSalt';
+import { IPasswordHash, INewPasswordHashConfig } from '../../models/PasswordHash';
+import { IPasswordSalt, INewPasswordSaltConfig } from '../../models/PasswordSalt';
 import { IRestrictedDatabaseService } from '../Database';
-import { PasswordHashService } from './PasswordHash';
-import { PasswordSaltService } from './PasswordSalt';
 
 export interface IAuthenticationService {
     validateCredentials({ email, password }: IAuthenticationRequest): Promise<boolean>;
@@ -70,9 +67,10 @@ export class AuthenticationService implements IAuthenticationService {
 
         const { hash, salt } = await this._resolveSerializedHash(password);
 
-        const hashPayload: IPasswordHashSchema = { email, hash };
-        const saltPayload: IPasswordSaltSchema = { email, salt };
-        const query: { email: string } = { email };
+        const hashPayload: INewPasswordHashConfig = { email, hash };
+        const saltPayload: INewPasswordSaltConfig = { email, salt };
+
+        const query = { email };
 
         await Promise.all([
             this._passwordHashService.upsert(query, hashPayload),
