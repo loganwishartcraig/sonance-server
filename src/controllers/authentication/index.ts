@@ -36,17 +36,11 @@ class AuthenticationController {
         passport.authenticate('local', (err, user, info) => {
 
             if (err) {
-                next(err);
-            } else if (!user) {
-                next(new GenericError({
-                    httpStatus: 422,
-                    code: AuthenticationErrorCode.INVALID_CREDENTIALS,
-                    message: 'Incorrect email or password. Please try again.',
-                }));
+                return next(err);
             }
 
             req.logIn(user, (loginErr) => {
-                if (loginErr) throw loginErr;
+                if (loginErr) next(loginErr);
                 return res.status(200).json({ user });
             });
 

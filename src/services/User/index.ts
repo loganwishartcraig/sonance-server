@@ -8,8 +8,8 @@ export interface IUserService extends IDatabaseService {
 
 export interface IUserCreate {
     readonly email: string;
-    readonly nameFirst: string;
-    readonly nameLast: string;
+    readonly firstName: string;
+    readonly lastName: string;
 }
 
 export class UserService extends DatabaseService<IUser> implements IUserService {
@@ -29,10 +29,8 @@ export class UserService extends DatabaseService<IUser> implements IUserService 
 
         return {
             email: payload.email,
-            name: {
-                first: payload.nameFirst,
-                last: payload.nameLast,
-            },
+            firstName: payload.firstName,
+            lastName: payload.lastName,
         };
 
     }

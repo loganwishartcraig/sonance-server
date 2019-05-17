@@ -15,5 +15,7 @@ export const passwordSaltSchema = new Schema({
     salt: { type: String, required: true },
 });
 
+export const PASSWORD_SALT_MODEL_NAME: string = 'PasswordSalt';
+
 export const buildPasswordSaltModel = (connection: Connection) =>
-    connection.model('PasswordSalt', passwordSaltSchema);
+    connection.model(PASSWORD_SALT_MODEL_NAME, passwordSaltSchema);

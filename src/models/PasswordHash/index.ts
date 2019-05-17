@@ -15,5 +15,7 @@ export const passwordHashSchema = new Schema({
     hash: { type: String, required: true },
 });
 
+export const PASSWORD_HASH_MODEL_NAME: string = 'PasswordHash';
+
 export const buildPasswordHashModel = (connection: Connection) =>
-    connection.model('PasswordHash', passwordHashSchema);
+    connection.model(PASSWORD_HASH_MODEL_NAME, passwordHashSchema);

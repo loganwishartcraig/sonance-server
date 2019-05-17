@@ -24,7 +24,6 @@ const localStrategyOptions: IStrategyOptions = {
 
 const verifyLocalAuth: VerifyFunction = wrapCatch(async (email, password, done) => {
 
-    // TODO: Implement actual password checking...
     const credentialsValid = await authService.validateCredentials({ email, password });
 
     if (!credentialsValid) {
@@ -36,8 +35,8 @@ const verifyLocalAuth: VerifyFunction = wrapCatch(async (email, password, done) 
     if (!user) {
         throw new GenericError({
             code: DatabaseServiceErrorCode.RECORD_NOT_FOUND,
-            message: 'User not found',
-            httpStatus: 422,
+            message: 'Internal Error: User information not found after logging in.',
+            httpStatus: 500,
         });
     }
 

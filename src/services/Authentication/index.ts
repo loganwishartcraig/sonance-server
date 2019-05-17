@@ -22,6 +22,11 @@ export interface IAuthenticationRequest {
     readonly password: string;
 }
 
+export interface IAuthenticationServiceConfig {
+    passwordHashService: IRestrictedDatabaseService<IPasswordHash>;
+    passwordSaltService: IRestrictedDatabaseService<IPasswordSalt>;
+}
+
 export class AuthenticationService implements IAuthenticationService {
 
     private readonly _passwordHashService: IRestrictedDatabaseService<IPasswordHash>;
@@ -29,9 +34,9 @@ export class AuthenticationService implements IAuthenticationService {
 
     private readonly _prehashSecret: string = process.env.PASSWORD_PREHASH_SECRET as string;
 
-    constructor(connection: Connection) {
-        this._passwordHashService = new PasswordHashService(connection);
-        this._passwordSaltService = new PasswordSaltService(connection);
+    constructor({ passwordHashService, passwordSaltService }: IAuthenticationServiceConfig) {
+        this._passwordHashService = passwordHashService;
+        this._passwordSaltService = passwordSaltService;
     }
 
     public async validateCredentials(
