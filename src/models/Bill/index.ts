@@ -14,7 +14,7 @@ export interface IBill {
     readonly createdBy: string;
     readonly createdOn: string;
     readonly status: BillStatus;
-    readonly statusLastChanged: string;
+    readonly statusLastChanged: Date;
     readonly name: string;
     readonly totalAmount: number;
 }
@@ -24,7 +24,7 @@ export type INewBillConfig = Pick<IBill, 'createdBy' | 'totalAmount'> & Optional
 export const BILL_MODEL_NAME: string = 'Bill';
 
 const validateTotalAmount: [SchemaTypeOpts.ValidateFn<number>, string] = [
-    value => value > 0,
+    value => value >= 0,
     'The total amount for a bill cannot be negative.',
 ];
 
@@ -35,6 +35,7 @@ const validateBillStatus: [SchemaTypeOpts.ValidateFn<BillStatus>, string] = [
 
 export const billSchema = new Schema<IBill>(
     {
+        transform: (_doc, ret) => { delete ret._id; },
         publicId: { type: String, required: true },
         createdBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
         createdOn: { type: Date, required: true, default: () => new Date() },
@@ -45,6 +46,9 @@ export const billSchema = new Schema<IBill>(
     },
     {
         toObject: {
+            transform: (_doc, ret) => { delete ret._id; },
+        },
+        toJSON: {
             transform: (_doc, ret) => { delete ret._id; },
         },
     }
