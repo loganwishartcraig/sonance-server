@@ -1,6 +1,8 @@
 import { Connection, Document, Model, Schema, SchemaTypeOpts } from 'mongoose';
 import { USER_MODEL_NAME } from '../User';
 import { Optional } from '../../common/types';
+import { billableItemSchema } from '../BillableItem';
+import { billParticipantSchema } from '../BillParticipant';
 
 export enum BillStatus {
     CANCELLED = -90,
@@ -43,6 +45,8 @@ export const billSchema = new Schema<IBill>(
         statusLastChanged: { type: Number, required: true, default: new Date() },
         name: { type: String },
         totalAmount: { type: Number, required: true, validate: validateTotalAmount },
+        items: [billableItemSchema],
+        participants: [billParticipantSchema],
     },
     {
         toObject: {
