@@ -3,8 +3,9 @@ import { AuthenticationService, IAuthenticationService } from './Authentication'
 import { UserService, IUserService } from './User';
 import { PasswordHashService } from './Authentication/PasswordHash';
 import { PasswordSaltService } from './Authentication/PasswordSalt';
-import { IBillService, BillService } from './Billing/BillService';
 import { IPaymentService, PaymentService } from './Payment';
+import { BillService, IBillService } from './Bill';
+
 require('dotenv').config();
 
 const enum DatabaseName {

@@ -1,5 +1,5 @@
-import { DatabaseService, IDatabaseService } from '../../Database';
-import { IBill, buildBillModel, INewBillConfig } from '../../../models/Bill';
+import { DatabaseService, IDatabaseService } from '../Database';
+import { IBill, buildBillModel, INewBillConfig } from '../../models/Bill';
 import { Connection } from 'mongoose';
 
 export interface IBillService extends IDatabaseService<IBill, INewBillConfig> {
