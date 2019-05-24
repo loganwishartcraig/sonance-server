@@ -1,4 +1,4 @@
-import { Schema, SchemaTypeOpts, SchemaType, SchemaTypes } from 'mongoose';
+import { Schema, SchemaTypeOpts, SchemaType, SchemaTypes, Model, Connection, Document } from 'mongoose';
 import { Omit } from '../../common/types';
 
 export interface IPayment {
@@ -12,6 +12,8 @@ export interface IPayment {
 
 export type INewPaymentConfig = Omit<IPayment, '_id'>;
 
+export const PAYMENT_MODEL_NAME: string = 'Payment';
+
 const validateAmount: [SchemaTypeOpts.ValidateFn<number>, string] = [
     value => value > 0,
     'The amount for a payment must be greater than zero.',
@@ -24,3 +26,6 @@ export const paymentSchema = new Schema<IPayment>({
     sender: { type: SchemaTypes.ObjectId, required: true },
     recipient: { type: SchemaTypes.ObjectId, required: true },
 });
+
+export const buildPaymentModel = (connection: Connection) =>
+    connection.model<Document, Model<Document, IPayment>>(PAYMENT_MODEL_NAME, paymentSchema);
