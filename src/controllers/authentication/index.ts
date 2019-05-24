@@ -47,7 +47,7 @@ class AuthenticationController {
         })(req, res, next);
     }
 
-    public setCredentials: RequestHandler = wrapCatch(async (req, res, next) => {
+    public setCredentials: RequestHandler = wrapCatch(async (req, _res, next) => {
 
         const { email, password } = req.body;
 
@@ -56,6 +56,11 @@ class AuthenticationController {
         next();
 
     });
+
+    public logout: RequestHandler = (req, res) => {
+        req.logout();
+        return res.sendStatus(204);
+    }
 
 }
 

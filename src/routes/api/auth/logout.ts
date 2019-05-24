@@ -1,14 +1,11 @@
 import { Router } from 'express';
-import passport = require('passport');
+import authController from '../../../controllers/authentication';
 
 const router = Router();
 
 router.post(
     '/logout',
-    (req, res) => {
-        req.logout();
-        return res.sendStatus(204);
-    }
+    authController.logout
 );
 
 export { router as logoutRouter };
