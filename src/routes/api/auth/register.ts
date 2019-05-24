@@ -1,9 +1,8 @@
-import { RequestHandler, Router } from 'express';
+import { Router } from 'express';
 import { check } from 'express-validator/check';
-import userController from '../../../controllers/user';
-import passport = require('passport');
-import { ensureNoValidationErrors } from '../../../middleware';
 import authController from '../../../controllers/authentication';
+import userController from '../../../controllers/user';
+import validationController from '../../../controllers/validation';
 
 const router = Router();
 
@@ -23,7 +22,7 @@ export const validation = [
 router.post(
     '/register',
     validation,
-    ensureNoValidationErrors,
+    validationController.ensureNoErrors,
     userController.createUser,
     authController.setCredentials,
     authController.authenticateLocal

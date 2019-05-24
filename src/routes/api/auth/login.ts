@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { check } from 'express-validator/check';
 import authController from '../../../controllers/authentication';
-import { ensureNoValidationErrors } from '../../../middleware';
+import validationController from '../../../controllers/validation';
 
 const router = Router();
 
@@ -15,9 +15,8 @@ const validation = [
 router.post(
     '/login',
     validation,
-    ensureNoValidationErrors,
+    validationController.ensureNoErrors,
     authController.authenticateLocal
 );
 
 export { router as loginRouter };
-
