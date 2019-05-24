@@ -17,10 +17,9 @@ const validateAmount: [SchemaTypeOpts.ValidateFn<number>, string] = [
     'The amount for a payment must be greater than zero.',
 ];
 
-// TODO Update all 'default: new Date()' references to 'default: new Date'
 export const paymentSchema = new Schema<IPayment>({
     publicId: { type: String, required: true },
-    createdOn: { type: Date, required: true, default: new Date() },
+    createdOn: { type: Date, required: true, default: Date.now },
     amount: { type: Number, required: true, validate: validateAmount },
     sender: { type: SchemaTypes.ObjectId, required: true },
     recipient: { type: SchemaTypes.ObjectId, required: true },

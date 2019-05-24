@@ -24,6 +24,6 @@ const validateAmount: [SchemaTypeOpts.ValidateFn<number>, string] = [
 export const billableItemSchema = new Schema<IBillableItem>({
     name: { type: String, required: true },
     amount: { type: Number, required: true, validate: validateAmount },
-    statusLastChanged: { type: Date, required: true, default: new Date() },
+    statusLastChanged: { type: Date, required: true, default: Date.now },
     status: { type: Number, required: true, default: PaymentStatus.CREATED },
 });

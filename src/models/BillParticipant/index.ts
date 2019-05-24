@@ -9,6 +9,6 @@ export interface IBillParticipant {
 export type ICreateBillParticipantConfig = Pick<IBillParticipant, 'memberId'>;
 
 export const billParticipantSchema = new Schema<IBillParticipant>({
-    createdOn: { type: Date, required: true, default: new Date() },
+    createdOn: { type: Date, required: true, default: Date.now },
     memberId: { type: SchemaTypes.ObjectId, required: true },
 });
