@@ -37,7 +37,6 @@ const validateBillStatus: [SchemaTypeOpts.ValidateFn<BillStatus>, string] = [
 
 export const billSchema = new Schema<IBill>(
     {
-        transform: (_doc, ret) => { delete ret._id; },
         publicId: { type: String, required: true },
         createdBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
         createdOn: { type: Date, required: true, default: Date.now },
@@ -50,10 +49,10 @@ export const billSchema = new Schema<IBill>(
     },
     {
         toObject: {
-            transform: (_doc, ret) => { delete ret._id; },
+            transform: (_doc: any, ret: any) => { delete ret._id; },
         },
         toJSON: {
-            transform: (_doc, ret) => { delete ret._id; },
+            transform: (_doc: any, ret: any) => { delete ret._id; },
         },
     }
 );
