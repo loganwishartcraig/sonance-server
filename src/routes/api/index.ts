@@ -1,5 +1,8 @@
 import { Express } from 'express';
 import { authRoutes } from './auth';
+import { billRoutes } from './bill';
+
+const BASE_API_ROUTE: string = '/api/1';
 
 export const registerApiRoutes = (app: Express) => {
 
@@ -26,6 +29,7 @@ export const registerApiRoutes = (app: Express) => {
 
     }
 
-    app.use('/api/1/auth', authRoutes);
+    app.use(`${BASE_API_ROUTE}/auth`, authRoutes);
+    app.use(`${BASE_API_ROUTE}/bill`, billRoutes);
 
 };

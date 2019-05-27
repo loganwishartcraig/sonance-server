@@ -25,11 +25,18 @@ class AuthenticationController {
         this._authService = service;
     }
 
-    public checkAuth: RequestHandler = (req, res) => {
+    public checkAuth: RequestHandler = (req, _res, next) => {
+
         if (req.isAuthenticated()) {
-            return res.status(200).json({ hasAuth: true });
+            return next();
         }
-        return res.status(200).json({ hasAuth: false });
+
+        return next(new GenericError({
+            code: AuthenticationErrorCode.NOT_AUTHORIZED,
+            message: 'You are not authorized to perform that action',
+            httpStatus: 401,
+        }));
+
     }
 
     public authenticateLocal: RequestHandler = (req, res, next) => {

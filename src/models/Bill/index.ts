@@ -12,7 +12,6 @@ export enum BillStatus {
 }
 
 export interface IBill {
-    readonly publicId: string;
     readonly createdBy: string;
     readonly createdOn: string;
     readonly status: BillStatus;
@@ -37,7 +36,6 @@ const validateBillStatus: [SchemaTypeOpts.ValidateFn<BillStatus>, string] = [
 
 export const billSchema = new Schema<IBill>(
     {
-        publicId: { type: String, required: true },
         createdBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
         createdOn: { type: Date, required: true, default: Date.now },
         status: { type: Number, required: true, default: BillStatus.CREATED, validate: validateBillStatus },
@@ -46,14 +44,6 @@ export const billSchema = new Schema<IBill>(
         totalAmount: { type: Number, required: true, validate: validateTotalAmount },
         items: [billableItemSchema],
         participants: [billParticipantSchema],
-    },
-    {
-        toObject: {
-            transform: (_doc: any, ret: any) => { delete ret._id; },
-        },
-        toJSON: {
-            transform: (_doc: any, ret: any) => { delete ret._id; },
-        },
     }
 );
 
