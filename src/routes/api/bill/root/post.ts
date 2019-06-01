@@ -1,12 +1,20 @@
 import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator/check';
-import authController from '../../../../controllers/authentication';
 import billController from '../../../../controllers/bill';
 import validationController from '../../../../controllers/validation';
+import { validator } from 'validator';
 
 const router = Router();
 
 const bodySchemaValidation: Record<string, ValidationParamSchema> = {
+    bill: {
+        in: 'body',
+        custom: {
+            options: (value, { req, location, path }) => {
+                validator
+            },
+        },
+    },
     'bill.createdBy': {
         in: 'body',
         errorMessage: 'Bill cannot be created by an unknown user.',
@@ -36,7 +44,6 @@ const bodySchemaValidation: Record<string, ValidationParamSchema> = {
 
 router.post(
     '/',
-    authController.checkAuth,
     checkSchema(bodySchemaValidation),
     validationController.ensureNoErrors,
     billController.createBill

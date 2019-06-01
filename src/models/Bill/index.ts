@@ -1,8 +1,8 @@
 import { Connection, Document, Model, Schema, SchemaTypeOpts } from 'mongoose';
-import { USER_MODEL_NAME } from '../User';
 import { Optional } from '../../common/types';
-import { billableItemSchema } from '../BillableItem';
-import { billParticipantSchema } from '../BillParticipant';
+import { billableItemSchema, IBillableItem, ICreateBillableItem } from '../BillableItem';
+import { billParticipantSchema, IBillParticipant, ICreateBillParticipant } from '../BillParticipant';
+import { USER_MODEL_NAME } from '../User';
 
 export enum BillStatus {
     CANCELLED = -90,
@@ -18,9 +18,16 @@ export interface IBill {
     readonly statusLastChanged: Date;
     readonly name: string;
     readonly totalAmount: number;
+    readonly items: IBillableItem[];
+    readonly participants: IBillParticipant[];
 }
 
-export type INewBillConfig = Pick<IBill, 'createdBy' | 'totalAmount'> & Optional<IBill, 'name'>;
+export type INewBillConfig = Pick<IBill, 'createdBy' | 'totalAmount'>
+    & Optional<IBill, 'name'>
+    & {
+        items?: ICreateBillableItem[];
+        participants?: ICreateBillParticipant[];
+    };
 
 export const BILL_MODEL_NAME: string = 'Bill';
 

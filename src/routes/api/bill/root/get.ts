@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { check } from 'express-validator/check';
-import authController from '../../../../controllers/authentication';
-import validationController from '../../../../controllers/validation';
 import billController from '../../../../controllers/bill';
+import validationController from '../../../../controllers/validation';
 
 const router = Router();
 
@@ -12,10 +11,10 @@ const validation = [
 
 router.get(
     '/',
-    authController.checkAuth,
     validation,
     validationController.ensureNoErrors,
     billController.getAllForUser
 );
 
 export { router as rootGetRouter };
+

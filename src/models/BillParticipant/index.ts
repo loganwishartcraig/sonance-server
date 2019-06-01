@@ -6,7 +6,7 @@ export interface IBillParticipant {
     readonly memberId: string;
 }
 
-export type ICreateBillParticipantConfig = Pick<IBillParticipant, 'memberId'>;
+export type ICreateBillParticipant = Pick<IBillParticipant, 'memberId'>;
 
 export const billParticipantSchema = new Schema<IBillParticipant>({
     createdOn: { type: Date, required: true, default: Date.now },

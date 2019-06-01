@@ -1,7 +1,9 @@
-import { billService, IBillService } from '../../services';
 import { RequestHandler } from 'express';
 import { wrapCatch } from '../../common/Utilities';
 import { INewBillConfig } from '../../models/Bill';
+import { ICreateBillableItem } from '../../models/BillableItem';
+import { ICreateBillParticipant } from '../../models/BillParticipant';
+import { billService, IBillService } from '../../services';
 
 export interface ICreateBillBody {
     bill: INewBillConfig;
@@ -44,8 +46,27 @@ class BillController {
                 createdBy: bill.createdBy,
                 totalAmount: bill.totalAmount,
                 name: bill.name,
+                items: this._sanitizeCreateBillRequestBillableItems(bill.items),
+                participants: this._sanitizeCreateBillRequestParticipants(bill.participants),
             },
         };
+    }
+
+    private _sanitizeCreateBillRequestBillableItems(items: any[] = []): ICreateBillableItem[] {
+
+        return items.map(item => ({
+            amount: item.amount,
+            name: item.name,
+        } as ICreateBillableItem));
+
+    }
+
+    private _sanitizeCreateBillRequestParticipants(participants: any[] = []): ICreateBillParticipant[] {
+
+        return participants.map(item => ({
+            memberId: item.memberId,
+        } as ICreateBillParticipant));
+
     }
 
 }
