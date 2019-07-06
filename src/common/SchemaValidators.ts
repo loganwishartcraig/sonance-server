@@ -74,6 +74,22 @@ const schemaValidators = {
             msg,
         ],
 
+    isLength: <T extends { length: number }>(
+        {
+            min = Number.NEGATIVE_INFINITY,
+            max = Number.POSITIVE_INFINITY,
+            exactly,
+        }: {
+            min?: number;
+            max?: number;
+            exactly?: number;
+        },
+        msg: string = 'The provided values length is invalid'
+    ): SchemaValidator<T> => [
+            ({ length }) => (typeof exactly !== 'number' || exactly === length) && (min <= length && length <= max),
+            msg,
+        ],
+
 };
 
 export default schemaValidators;
