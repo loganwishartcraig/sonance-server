@@ -1,16 +1,17 @@
-import { Connection } from 'mongoose';
-import { billBodyModelFactory, IBillBody, INewBillBodyConfig } from '../../models';
-import { DatabaseService, IDatabaseService } from '../Database';
+import { IBillBody, INewBillBodyConfig } from '../../models';
+import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '../Database';
 
 export interface IBillService extends IDatabaseService<IBillBody, INewBillBodyConfig> {
     getByCreatorId(userId: string): Promise<IBillBody[]>;
 }
+export type IBillServiceConfig = IDatabaseServiceConfig<IBillBody>;
+
 export class BillService
     extends DatabaseService<IBillBody, INewBillBodyConfig>
     implements IBillService {
 
-    constructor(connection: Connection) {
-        super({ connection, modelFactory: billBodyModelFactory, });
+    constructor(config: IBillServiceConfig) {
+        super(config);
     }
 
     public async getByCreatorId(userId: string): Promise<IBillBody[]> {

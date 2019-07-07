@@ -1,18 +1,15 @@
-import { Connection } from 'mongoose';
-import { INewPasswordHashConfig, IPasswordHash, passwordHashModelFactory } from '../../../models';
-import { DatabaseService, IDatabaseService } from '../../Database';
+import { INewPasswordHashConfig, IPasswordHash } from '../../../models';
+import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '../../Database';
 
 export type IPasswordHashService = IDatabaseService<IPasswordHash, INewPasswordHashConfig>;
+export type IPasswordHashServiceConfig = IDatabaseServiceConfig<IPasswordHash>;
 
 export class PasswordHashService
     extends DatabaseService<IPasswordHash, INewPasswordHashConfig>
     implements IPasswordHashService {
 
-    constructor(connection: Connection) {
-        super({
-            connection,
-            modelFactory: passwordHashModelFactory,
-        });
+    constructor(config: IPasswordHashServiceConfig) {
+        super(config);
     }
 
 }

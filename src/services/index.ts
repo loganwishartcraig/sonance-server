@@ -4,6 +4,7 @@ import { PasswordHashService } from './Authentication/PasswordHash';
 import { PasswordSaltService } from './Authentication/PasswordSalt';
 import { BillService, IBillService } from './Bill';
 import { IUserService, UserService } from './User';
+import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '../models';
 
 require('dotenv').config();
 
@@ -27,14 +28,13 @@ const handleDatabaseError = (...args: any[]) => {
 // TODO: Allow connection consumers to reject promises if connection fails
 connection.on('error', handleDatabaseError);
 
-export const userService = new UserService(connection);
+export const userService = new UserService({ connection, modelFactory: userModelFactory });
 export const authService = new AuthenticationService({
-    passwordHashService: new PasswordHashService(connection),
-    passwordSaltService: new PasswordSaltService(connection),
+    passwordHashService: new PasswordHashService({ connection, modelFactory: passwordHashModelFactory }),
+    passwordSaltService: new PasswordSaltService({ connection, modelFactory: passwordSaltModelFactory }),
 });
-export const billService = new BillService(connection);
+export const billService = new BillService({ connection, modelFactory: billBodyModelFactory });
 
 export { IAuthenticationService };
 export { IUserService };
 export { IBillService };
-
