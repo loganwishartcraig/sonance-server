@@ -1,6 +1,7 @@
 import { Connection, Document, Model } from 'mongoose';
 import { FriendRequestSchema } from '../../schemas';
 import { IUser } from '../User';
+import { ModelName } from '../../constants/model_names';
 
 export interface IFriendRequest {
     readonly _id: string;
@@ -13,7 +14,5 @@ export interface IFriendRequest {
 
 export type INewFriendRequestConfig = Omit<IFriendRequest, '_id' | 'respondedOn' | 'rejected'>;
 
-export const FRIEND_REQUEST_MODEL_NAME = 'FriendRequest' as const;
-
 export const friendRequestModelFactory = (connection: Connection) =>
-    connection.model<Document, Model<Document, IFriendRequest>>(FRIEND_REQUEST_MODEL_NAME, FriendRequestSchema);
+    connection.model<Document, Model<Document, IFriendRequest>>(ModelName.FRIEND_REQUEST, FriendRequestSchema);

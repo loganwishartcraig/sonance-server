@@ -2,6 +2,7 @@ import { Connection, Document, Model } from 'mongoose';
 import { FriendGroupSchema } from '../../schemas';
 import { IUser } from '../User';
 import { IFriendGroupMember } from '../';
+import { ModelName } from '../../constants/model_names';
 
 export interface IFriendGroup {
     readonly _id: string;
@@ -14,7 +15,5 @@ export interface IFriendGroup {
 
 export type INewFriendGroupConfig = Omit<IFriendGroup, '_id'>;
 
-export const FRIEND_GROUP_MODEL_NAME = 'FriendGroup' as const;
-
 export const friendGroupModelFactory = (connection: Connection) =>
-    connection.model<Document, Model<Document, IFriendGroup>>(FRIEND_GROUP_MODEL_NAME, FriendGroupSchema);
+    connection.model<Document, Model<Document, IFriendGroup>>(ModelName.FRIEND_GROUP, FriendGroupSchema);

@@ -1,10 +1,11 @@
 import { Schema } from 'mongoose';
 import schemaValidators from '../../common/SchemaValidators';
-import { IBillPayment, USER_MODEL_NAME, BillPaymentMethod } from '../../models';
+import { ModelName } from '../../constants/model_names';
+import { BillPaymentMethod, IBillPayment } from '../../models';
 
 const billPaymentSchema = new Schema<IBillPayment>({
-    paidBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
-    paidTo: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
+    paidBy: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },
+    paidTo: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },
     paidOn: { type: Date, required: true },
     amount: { type: Number, required: true, validate: schemaValidators.gtez('You cannot pay a negative amount') },
     method: {

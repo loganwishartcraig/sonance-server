@@ -1,11 +1,12 @@
 import { Schema } from 'mongoose';
 import schemaValidators from '../../common/SchemaValidators';
-import { IBillLineItem, USER_MODEL_NAME } from '../../models';
+import { ModelName } from '../../constants/model_names';
+import { IBillLineItem } from '../../models';
 
 const billLineItemSchema = new Schema<IBillLineItem>({
-    createdBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true, index: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },
     createdOn: { type: Date, required: true, default: Date.now },
-    claimedBy: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME },
+    claimedBy: { type: Schema.Types.ObjectId, ref: ModelName.USER },
     deletedOn: { type: Date, required: true },
     isShared: { type: Boolean, required: true, default: false },
     quantity: {

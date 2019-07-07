@@ -1,8 +1,9 @@
 import { Schema } from 'mongoose';
-import { IFriendGroupMember, USER_MODEL_NAME } from '../../models';
+import { IFriendGroupMember } from '../../models';
+import { ModelName } from '../../constants/model_names';
 
 const friendGroupMemberSchema = new Schema<IFriendGroupMember>({
-    user: { type: Schema.Types.ObjectId, ref: USER_MODEL_NAME, required: true },
+    user: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true },
     addedOn: { type: Date, required: true, default: Date.now },
 });
 
