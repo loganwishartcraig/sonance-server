@@ -1,8 +1,7 @@
 import { Router } from 'express';
-import { checkSchema, ValidationParamSchema } from 'express-validator/check';
+import { checkSchema, ValidationParamSchema } from 'express-validator';
 import billController from '../../../../controllers/bill';
 import validationController from '../../../../controllers/validation';
-import { validator } from 'validator';
 
 const router = Router();
 
@@ -10,9 +9,7 @@ const bodySchemaValidation: Record<string, ValidationParamSchema> = {
     bill: {
         in: 'body',
         custom: {
-            options: (value, { req, location, path }) => {
-                validator
-            },
+            options: (value, { req, location, path }) => !!value,
         },
     },
     'bill.createdBy': {

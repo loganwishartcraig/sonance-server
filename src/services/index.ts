@@ -1,10 +1,9 @@
-import { set as mongooseSet, createConnection } from 'mongoose';
+import { createConnection, set as mongooseSet } from 'mongoose';
 import { AuthenticationService, IAuthenticationService } from './Authentication';
-import { UserService, IUserService } from './User';
 import { PasswordHashService } from './Authentication/PasswordHash';
 import { PasswordSaltService } from './Authentication/PasswordSalt';
-import { IPaymentService, PaymentService } from './Payment';
 import { BillService, IBillService } from './Bill';
+import { IUserService, UserService } from './User';
 
 require('dotenv').config();
 
@@ -29,17 +28,13 @@ const handleDatabaseError = (...args: any[]) => {
 connection.on('error', handleDatabaseError);
 
 export const userService = new UserService(connection);
-
 export const authService = new AuthenticationService({
     passwordHashService: new PasswordHashService(connection),
     passwordSaltService: new PasswordSaltService(connection),
 });
-
 export const billService = new BillService(connection);
-
-export const paymentService = new PaymentService(connection);
 
 export { IAuthenticationService };
 export { IUserService };
 export { IBillService };
-export { IPaymentService };
+

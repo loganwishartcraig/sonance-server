@@ -2,20 +2,19 @@ import cookieParser from 'cookie-parser';
 import express, { RequestHandler } from 'express';
 import { ErrorRequestHandler } from 'express-serve-static-core';
 import session from 'express-session';
-import validator from 'express-validator';
 import createError from 'http-errors';
 import logger from 'morgan';
 import sassMiddleware from 'node-sass-middleware';
 import path from 'path';
+import { GenericError } from './common/GenericError';
+import { wrapCatch } from './common/Utilities';
+import { DatabaseServiceErrorCode } from './constants/error_codes';
 import { IUser } from './models/User';
+import { registerRoutes } from './routes';
+import { userService } from './services';
+import { localStrategy } from './strategies/local';
 
 import passport = require('passport');
-import { registerRoutes } from './routes';
-import { GenericError } from './common/GenericError';
-import { DatabaseServiceErrorCode } from './constants/error_codes';
-import { wrapCatch } from './common/Utilities';
-import { localStrategy } from './strategies/local';
-import { userService } from './services';
 
 require('dotenv').config();
 
@@ -37,7 +36,6 @@ app.use(sassMiddleware({
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(validator());
 app.use(session({
   secret: process.env.COOKIE_SECRET as string,
   resave: false,

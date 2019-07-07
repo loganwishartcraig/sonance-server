@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { check } from 'express-validator/check';
+import { check } from 'express-validator';
 import authController from '../../../controllers/authentication';
 import validationController from '../../../controllers/validation';
 

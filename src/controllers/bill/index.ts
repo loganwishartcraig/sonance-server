@@ -1,12 +1,11 @@
 import { RequestHandler } from 'express';
 import { wrapCatch } from '../../common/Utilities';
-import { INewBillConfig } from '../../models/Bill';
-import { ICreateBillableItem } from '../../models/BillableItem';
-import { ICreateBillParticipant } from '../../models/BillParticipant';
 import { billService, IBillService } from '../../services';
+import { INewBillBodyConfig } from '../../models/BillBody';
+import IBillLineItem from '../../models/BillLineItem';
 
 export interface ICreateBillBody {
-    bill: INewBillConfig;
+    bill: INewBillBodyConfig;
 }
 
 class BillController {
@@ -29,7 +28,8 @@ class BillController {
 
     public createBill: RequestHandler = wrapCatch(async (req, res) => {
 
-        const { bill: billConfig } = this._sanitizeCreateBillRequestBody(req.body);
+        // const { bill: billConfig } = this._sanitizeCreateBillRequestBody(req.body);
+        const { bill: billConfig } = req.body;
 
         console.warn('creating bill!!', billConfig);
 
@@ -39,35 +39,35 @@ class BillController {
 
     });
 
-    private _sanitizeCreateBillRequestBody({ bill = {} }: any): ICreateBillBody {
+    // private _sanitizeCreateBillRequestBody({ bill = {} }: any): ICreateBillBody {
 
-        return {
-            bill: {
-                createdBy: bill.createdBy,
-                totalAmount: bill.totalAmount,
-                name: bill.name,
-                items: this._sanitizeCreateBillRequestBillableItems(bill.items),
-                participants: this._sanitizeCreateBillRequestParticipants(bill.participants),
-            },
-        };
-    }
+    //     return {
+    //         bill: {
+    //             createdBy: bill.createdBy,
+    //             totalAmount: bill.totalAmount,
+    //             name: bill.name,
+    //             items: this._sanitizeCreateBillRequestBillableItems(bill.items),
+    //             participants: this._sanitizeCreateBillRequestParticipants(bill.participants),
+    //         },
+    //     };
+    // }
 
-    private _sanitizeCreateBillRequestBillableItems(items: any[] = []): ICreateBillableItem[] {
+    // private _sanitizeCreateBillRequestBillableItems(items: any[] = []): IBillLineItem[] {
 
-        return items.map(item => ({
-            amount: item.amount,
-            name: item.name,
-        } as ICreateBillableItem));
+    //     return items.map(item => ({
+    //         amount: item.amount,
+    //         name: item.name,
+    //     } as ICreateBillLineItem));
 
-    }
+    // }
 
-    private _sanitizeCreateBillRequestParticipants(participants: any[] = []): ICreateBillParticipant[] {
+    // private _sanitizeCreateBillRequestParticipants(participants: any[] = []): ICreateBillParticipant[] {
 
-        return participants.map(item => ({
-            memberId: item.memberId,
-        } as ICreateBillParticipant));
+    //     return participants.map(item => ({
+    //         memberId: item.memberId,
+    //     } as ICreateBillParticipant));
 
-    }
+    // }
 
 }
 

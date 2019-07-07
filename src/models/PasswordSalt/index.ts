@@ -1,5 +1,5 @@
-import { Connection, Schema } from 'mongoose';
-import { Omit } from '../../common/types';
+import { Connection, Document, Model } from 'mongoose';
+import { PasswordSaltSchema } from '../../schemas';
 
 export interface IPasswordSalt {
     readonly _id: string;
@@ -10,12 +10,9 @@ export interface IPasswordSalt {
 // All fields required
 export type INewPasswordSaltConfig = Omit<IPasswordSalt, '_id'>;
 
-export const PASSWORD_SALT_MODEL_NAME: string = 'PasswordSalt';
+export const MODEL_NAME = 'PasswordSalt' as const;
 
-export const passwordSaltSchema = new Schema<IPasswordSalt>({
-    email: { type: String, required: true },
-    salt: { type: String, required: true },
-});
+const modelFactory = (connection: Connection) =>
+    connection.model<Document, Model<Document, IPasswordSalt>>(MODEL_NAME, PasswordSaltSchema);
 
-export const buildPasswordSaltModel = (connection: Connection) =>
-    connection.model(PASSWORD_SALT_MODEL_NAME, passwordSaltSchema);
+export default modelFactory;

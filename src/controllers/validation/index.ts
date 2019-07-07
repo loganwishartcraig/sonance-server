@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express-serve-static-core';
-import { validationResult } from 'express-validator/check';
+import { validationResult } from 'express-validator';
 import { GenericError } from '../../common/GenericError';
 import { ValidationErrorCode } from '../../constants/error_codes';
 import { wrapCatch } from '../../common/Utilities';

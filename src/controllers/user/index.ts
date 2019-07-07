@@ -38,10 +38,10 @@ class UserController {
      */
     private _parseBodyForCreation({
         email,
-        firstName,
-        lastName,
+        displayName,
+        avatar,
     }: any): INewUserConfig {
-        return { email, firstName, lastName };
+        return { email, displayName, avatar };
     }
 
 }

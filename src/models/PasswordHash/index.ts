@@ -1,5 +1,5 @@
-import { Connection, Schema } from 'mongoose';
-import { Omit } from '../../common/types';
+import { Connection, Document, Model } from 'mongoose';
+import { PasswordHashSchema } from '../../schemas';
 
 export interface IPasswordHash {
     readonly _id: string;
@@ -10,12 +10,9 @@ export interface IPasswordHash {
 // All fields required for creation
 export type INewPasswordHashConfig = Omit<IPasswordHash, '_id'>;
 
-export const PASSWORD_HASH_MODEL_NAME: string = 'PasswordHash';
+export const MODEL_NAME = 'PasswordHash' as const;
 
-export const passwordHashSchema = new Schema<IPasswordHash>({
-    email: { type: String, required: true },
-    hash: { type: String, required: true },
-});
+const modelFactory = (connection: Connection) =>
+    connection.model<Document, Model<Document, IPasswordHash>>(MODEL_NAME, PasswordHashSchema);
 
-export const buildPasswordHashModel = (connection: Connection) =>
-    connection.model(PASSWORD_HASH_MODEL_NAME, passwordHashSchema);
+export default modelFactory;

@@ -1,14 +1,10 @@
-import { Schema, SchemaTypes } from 'mongoose';
+import { IUser } from '../User';
 
-export interface IBillParticipant {
+export default interface IBillParticipant {
     readonly _id: string;
-    readonly createdOn: Date;
-    readonly memberId: string;
+    readonly participant: IUser;
+    readonly joinedOn: Date;
+    readonly invitedBy: IUser | void;
+    readonly invitedOn: Date | void;
+    readonly leftOn: Date | void;
 }
-
-export type ICreateBillParticipant = Pick<IBillParticipant, 'memberId'>;
-
-export const billParticipantSchema = new Schema<IBillParticipant>({
-    createdOn: { type: Date, required: true, default: Date.now },
-    memberId: { type: SchemaTypes.ObjectId, required: true },
-});
