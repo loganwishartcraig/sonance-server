@@ -13,9 +13,7 @@ export interface IFriendRequest {
 
 export type INewFriendRequestConfig = Omit<IFriendRequest, '_id' | 'respondedOn' | 'rejected'>;
 
-export const MODEL_NAME = 'FriendRequest' as const;
+export const FRIEND_REQUEST_MODEL_NAME = 'FriendRequest' as const;
 
-const modelFactory = (connection: Connection) =>
-    connection.model<Document, Model<Document, IFriendRequest>>(MODEL_NAME, FriendRequestSchema);
-
-export default modelFactory;
+export const friendRequestModelFactory = (connection: Connection) =>
+    connection.model<Document, Model<Document, IFriendRequest>>(FRIEND_REQUEST_MODEL_NAME, FriendRequestSchema);

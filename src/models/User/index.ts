@@ -11,9 +11,7 @@ export interface IUser {
 
 export type INewUserConfig = Omit<IUser, '_id' | 'createdOn'>;
 
-export const MODEL_NAME = 'User' as const;
+export const USER_MODEL_NAME = 'User' as const;
 
-const modelFactory = (connection: Connection) =>
-    connection.model<Document, Model<Document, IUser>>(MODEL_NAME, UserSchema);
-
-export default modelFactory;
+export const userModelFactory = (connection: Connection) =>
+    connection.model<Document, Model<Document, IUser>>(USER_MODEL_NAME, UserSchema);

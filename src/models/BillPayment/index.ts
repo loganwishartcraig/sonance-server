@@ -17,9 +17,8 @@ export interface IBillPayment {
 
 export type INewBillPayment = Omit<IBillPayment, '_id'>;
 
-export const MODEL_NAME = 'BillPayment' as const;
+export const BILL_PAYMENT_MODEL_NAME = 'BillPayment' as const;
 
-const modelFactory = (connection: Connection) =>
-    connection.model<Document, Model<Document, IBillPayment>>(MODEL_NAME, BillPaymentSchema);
+export const billPaymentModelFactory = (connection: Connection) =>
+    connection.model<Document, Model<Document, IBillPayment>>(BILL_PAYMENT_MODEL_NAME, BillPaymentSchema);
 
-export default modelFactory;

@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import modelFactory, { IBillBody, INewBillBodyConfig } from '../../models/BillBody';
+import { billBodyModelFactory, IBillBody, INewBillBodyConfig } from '../../models';
 import { DatabaseService, IDatabaseService } from '../Database';
 
 export interface IBillService extends IDatabaseService<IBillBody, INewBillBodyConfig> {
@@ -10,10 +10,11 @@ export class BillService
     implements IBillService {
 
     constructor(connection: Connection) {
-        super({ connection, modelFactory, });
+        super({ connection, modelFactory: billBodyModelFactory, });
     }
 
     public async getByCreatorId(userId: string): Promise<IBillBody[]> {
+        // TODO: Resolve this any cast issue
         return this.find({ createdBy: userId as any });
     }
 

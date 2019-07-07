@@ -10,9 +10,7 @@ export interface IPasswordSalt {
 // All fields required
 export type INewPasswordSaltConfig = Omit<IPasswordSalt, '_id'>;
 
-export const MODEL_NAME = 'PasswordSalt' as const;
+export const PASSWORD_SALT_MODEL_NAME = 'PasswordSalt' as const;
 
-const modelFactory = (connection: Connection) =>
-    connection.model<Document, Model<Document, IPasswordSalt>>(MODEL_NAME, PasswordSaltSchema);
-
-export default modelFactory;
+export const passwordSaltModelFactory = (connection: Connection) =>
+    connection.model<Document, Model<Document, IPasswordSalt>>(PASSWORD_SALT_MODEL_NAME, PasswordSaltSchema);

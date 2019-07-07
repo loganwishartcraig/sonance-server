@@ -1,6 +1,6 @@
 import { IUser } from '../User';
 
-export default interface IBillLineItem {
+export interface IBillLineItem {
     readonly createdBy: IUser;
     readonly createdOn: Date;
     readonly claimedBy: IUser | void;

@@ -1,6 +1,6 @@
 import { Connection } from 'mongoose';
-import modelFactory, { INewPasswordSaltConfig, IPasswordSalt } from '../../../models/PasswordSalt';
 import { DatabaseService, IDatabaseService } from '../../Database';
+import { passwordSaltModelFactory, IPasswordSalt, INewPasswordSaltConfig } from '../../../models';
 
 export type IPasswordSaltService = IDatabaseService<IPasswordSalt, INewPasswordSaltConfig>;
 export class PasswordSaltService
@@ -8,7 +8,10 @@ export class PasswordSaltService
     implements IPasswordSaltService {
 
     constructor(connection: Connection) {
-        super({ connection, modelFactory });
+        super({
+            connection,
+            modelFactory: passwordSaltModelFactory,
+        });
     }
 
 }

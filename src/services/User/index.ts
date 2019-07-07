@@ -1,6 +1,6 @@
 import { Connection } from 'mongoose';
-import modelFactory, { INewUserConfig, IUser } from '../../models/User';
 import { DatabaseService, IDatabaseService } from '../Database';
+import { IUser, INewUserConfig, userModelFactory } from '../../models';
 
 export interface IUserService extends IDatabaseService<IUser, INewUserConfig> {
     findByEmail(email: string): Promise<IUser | undefined>;
@@ -11,7 +11,10 @@ export class UserService
     implements IUserService {
 
     constructor(connection: Connection) {
-        super({ connection, modelFactory });
+        super({
+            connection,
+            modelFactory: userModelFactory,
+        });
     }
 
     public async findByEmail(email: string): Promise<IUser | undefined> {

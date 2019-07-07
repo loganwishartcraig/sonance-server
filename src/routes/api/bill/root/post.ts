@@ -17,24 +17,26 @@ const bodySchemaValidation: Record<string, ValidationParamSchema> = {
         errorMessage: 'Bill cannot be created by an unknown user.',
         isMongoId: true,
     },
-    'bill.totalAmount': {
+    'bill.tax': {
         in: 'body',
-        errorMessage: 'Bill cannot have a non numeric amount.',
+        errorMessage: 'Bill cannot have a non numeric tax amount.',
         isNumeric: true,
         custom: {
-            errorMessage: 'Bill amount must be greater than or equal to zero.',
+            errorMessage: 'Bill tax amount must be greater than or equal to zero.',
             options: (value: any) => {
                 return typeof value === 'number' && !isNaN(value) && value >= 0;
             },
         },
     },
-    'bill.name': {
+    'bill.tip': {
         in: 'body',
-        optional: true,
-        isString: true,
-        isLength: {
-            errorMessage: 'Bill name cannot exceed 100 characters.',
-            options: { max: 100 },
+        errorMessage: 'Bill cannot have a non numeric tip amount.',
+        isNumeric: true,
+        custom: {
+            errorMessage: 'Bill tip amount must be greater than or equal to zero.',
+            options: (value: any) => {
+                return typeof value === 'number' && !isNaN(value) && value >= 0;
+            },
         },
     },
 };

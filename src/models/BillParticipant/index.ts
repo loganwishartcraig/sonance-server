@@ -1,6 +1,6 @@
 import { IUser } from '../User';
 
-export default interface IBillParticipant {
+export interface IBillParticipant {
     readonly _id: string;
     readonly participant: IUser;
     readonly joinedOn: Date;

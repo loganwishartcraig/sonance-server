@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { wrapCatch } from '../../common/Utilities';
 import { billService, IBillService } from '../../services';
 import { INewBillBodyConfig } from '../../models/BillBody';
-import IBillLineItem from '../../models/BillLineItem';
 
 export interface ICreateBillBody {
     bill: INewBillBodyConfig;

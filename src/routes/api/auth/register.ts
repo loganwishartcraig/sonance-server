@@ -11,10 +11,10 @@ export const validation = [
     check('password', 'Password should be at least 8 characters long.')
         .isString()
         .isLength({ min: 8, max: 200 }),
-    check('firstName', 'The provided name value is invalid')
+    check('displayName', 'The provided display name is invalid')
         .isString()
         .isLength({ min: 1, max: 200 }),
-    check('lastName', 'The provided name value is invalid')
+    check('avatar', 'The provided avatar is invalid')
         .isString()
         .isLength({ min: 1 }),
 ];

@@ -9,7 +9,7 @@ import path from 'path';
 import { GenericError } from './common/GenericError';
 import { wrapCatch } from './common/Utilities';
 import { DatabaseServiceErrorCode } from './constants/error_codes';
-import { IUser } from './models/User';
+import { IUser } from './models';
 import { registerRoutes } from './routes';
 import { userService } from './services';
 import { localStrategy } from './strategies/local';

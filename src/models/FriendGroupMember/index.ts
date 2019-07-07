@@ -1,6 +1,6 @@
 import { IUser } from '../User';
 
-export default interface IFriendGroupMember {
+export interface IFriendGroupMember {
     readonly user: IUser;
     readonly addedOn: Date;
 }
