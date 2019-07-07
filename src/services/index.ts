@@ -5,12 +5,9 @@ import { PasswordSaltService } from './Authentication/PasswordSalt';
 import { BillService, IBillService } from './Bill';
 import { IUserService, UserService } from './User';
 import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '../models';
+import { DatabaseName } from '../constants/database_names';
 
 require('dotenv').config();
-
-const enum DatabaseName {
-    MODELS = 'models',
-}
 
 // TODO Extract this into a 'mongoose config' file
 // Sets mongoose configuration flags

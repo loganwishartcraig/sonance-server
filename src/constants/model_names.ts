@@ -1,4 +1,4 @@
-export enum ModelName {
+export const enum ModelName {
     BILL_BODY = 'BillBody',
     BILL_PAYMENT = 'BillPayment',
     FRIEND_GROUP = 'FriendGroup',
