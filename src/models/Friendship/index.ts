@@ -1,7 +1,8 @@
-import { Connection, Document, Model } from 'mongoose';
-import { FriendshipSchema } from '../../schemas';
-import { IUser } from '../User';
+import { Document, Model } from 'mongoose';
 import { ModelName } from '../../constants/model_names';
+import { FriendshipSchema } from '../../schemas';
+import { ModelFactory } from '../types';
+import { IUser } from '../User';
 
 export interface IFriendship {
     readonly _id: string;
@@ -12,5 +13,5 @@ export interface IFriendship {
 
 export type INewFriendshipConfig = Omit<IFriendship, '_id'>;
 
-export const friendshipModelFactory = (connection: Connection) =>
+export const friendshipModelFactory: ModelFactory<IFriendship> = connection =>
     connection.model<Document, Model<Document, IFriendship>>(ModelName.FRIENDSHIP, FriendshipSchema);

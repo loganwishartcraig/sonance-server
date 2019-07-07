@@ -1,8 +1,9 @@
-import { Connection, Document, Model } from 'mongoose';
-import { BillBodySchema } from '../../schemas';
-import { IUser } from '../User';
-import { IBillParticipant, IBillLineItem } from '../../models';
+import { Document, Model } from 'mongoose';
 import { ModelName } from '../../constants/model_names';
+import { IBillLineItem, IBillParticipant } from '../../models';
+import { BillBodySchema } from '../../schemas';
+import { ModelFactory } from '../types';
+import { IUser } from '../User';
 
 export interface IBillBody {
     readonly _id: string;
@@ -17,5 +18,5 @@ export interface IBillBody {
 
 export type INewBillBodyConfig = Omit<IBillBody, '_id'>;
 
-export const billBodyModelFactory = (connection: Connection) =>
+export const billBodyModelFactory: ModelFactory<IBillBody> = connection =>
     connection.model<Document, Model<Document, IBillBody>>(ModelName.BILL_BODY, BillBodySchema);

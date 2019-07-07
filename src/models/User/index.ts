@@ -1,6 +1,7 @@
-import { Connection, Document, Model } from 'mongoose';
-import { UserSchema } from '../../schemas';
+import { Document, Model } from 'mongoose';
 import { ModelName } from '../../constants/model_names';
+import { UserSchema } from '../../schemas';
+import { ModelFactory } from '../types';
 
 export interface IUser {
     readonly _id: string;
@@ -12,5 +13,5 @@ export interface IUser {
 
 export type INewUserConfig = Omit<IUser, '_id' | 'createdOn'>;
 
-export const userModelFactory = (connection: Connection) =>
+export const userModelFactory: ModelFactory<IUser> = connection =>
     connection.model<Document, Model<Document, IUser>>(ModelName.USER, UserSchema);

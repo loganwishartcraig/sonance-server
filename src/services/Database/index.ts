@@ -1,11 +1,10 @@
 import { Connection, Document, Model, QueryFindOneAndUpdateOptions } from 'mongoose';
+import { ModelFactory } from '../../models/types';
 
-export interface IDatabaseServiceConfig {
+export interface IDatabaseServiceConfig<T = any> {
     readonly connection: Connection;
-    readonly modelFactory: ModelFactory;
+    readonly modelFactory: ModelFactory<T>;
 }
-
-export type ModelFactory = (conn: Connection) => Model<Document>;
 
 // Separation of IRestrictedDatabaseService/IDatabaseService
 // was done with the intention of allowing a service to eventually

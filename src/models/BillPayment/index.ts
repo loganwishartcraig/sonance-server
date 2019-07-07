@@ -1,7 +1,8 @@
-import { Connection, Document, Model } from 'mongoose';
-import { BillPaymentSchema } from '../../schemas';
-import { IUser } from '../User';
+import { Document, Model } from 'mongoose';
 import { ModelName } from '../../constants/model_names';
+import { BillPaymentSchema } from '../../schemas';
+import { ModelFactory } from '../types';
+import { IUser } from '../User';
 
 export enum BillPaymentMethod {
     PAYPAL,
@@ -18,6 +19,6 @@ export interface IBillPayment {
 
 export type INewBillPayment = Omit<IBillPayment, '_id'>;
 
-export const billPaymentModelFactory = (connection: Connection) =>
+export const billPaymentModelFactory: ModelFactory<IBillPayment> = connection =>
     connection.model<Document, Model<Document, IBillPayment>>(ModelName.BILL_PAYMENT, BillPaymentSchema);
 
