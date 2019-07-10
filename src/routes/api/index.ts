@@ -1,6 +1,6 @@
 import { Express } from 'express';
 import { authRoutes } from './auth';
-import { billRoutes } from './bill';
+import { billRoutes } from './bills';
 import authController from '../../controllers/authentication';
 
 const BASE_API_ROUTE: string = '/api/1';
@@ -32,7 +32,7 @@ export const registerApiRoutes = (app: Express) => {
 
     app.use(`${BASE_API_ROUTE}/auth`, authRoutes);
     app.use(
-        `${BASE_API_ROUTE}/bill`,
+        `${BASE_API_ROUTE}/bills`,
         authController.checkAuth,
         billRoutes
     );

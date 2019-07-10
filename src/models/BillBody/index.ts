@@ -16,7 +16,7 @@ export interface IBillBody {
     readonly participants: IBillParticipant[];
 }
 
-export type INewBillBodyConfig = Omit<IBillBody, '_id'>;
+export type INewBillBodyConfig = Omit<IBillBody, '_id' | 'createdOn'>;
 
 export const billBodyModelFactory: ModelFactory<IBillBody> = connection =>
     connection.model<Document, Model<Document, IBillBody>>(ModelName.BILL_BODY, BillBodySchema);

@@ -68,7 +68,7 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
     }
 
-    public async findOne(query: TypeSafeSchemaValueMap<ModelType>): Promise<ModelType | undefined> {
+    public async findOne(query: TypeSafeSchemaValueMap<ModelType>): Promise<ModelType | void> {
 
         await this._ready;
 

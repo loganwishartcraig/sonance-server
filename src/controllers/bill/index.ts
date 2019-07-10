@@ -17,8 +17,7 @@ class BillController {
 
     public getAllForUser: RequestHandler = wrapCatch(async (req, res, next) => {
 
-        const { query: { user: userId } } = req;
-
+        const { query: { userId } } = req;
         const bills = await this._billService.getByCreatorId(userId);
 
         return res.status(200).json({ bills });
@@ -29,9 +28,6 @@ class BillController {
 
         // const { bill: billConfig } = this._sanitizeCreateBillRequestBody(req.body);
         const { bill: billConfig } = req.body;
-
-        console.warn('creating bill!!', billConfig);
-
         const bill = await this._billService.insert(billConfig);
 
         return res.status(200).json({ bill });

@@ -1,10 +1,10 @@
-import { Document, Model } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 import { ModelName } from '../../constants/model_names';
 import { UserSchema } from '../../schemas';
 import { ModelFactory } from '../types';
 
 export interface IUser {
-    readonly _id: string;
+    readonly _id: Types.ObjectId;
     readonly email: string;
     readonly displayName: string;
     readonly createdOn: Date;
