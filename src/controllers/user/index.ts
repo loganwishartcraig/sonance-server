@@ -2,24 +2,27 @@ import { RequestHandler } from 'express-serve-static-core';
 import { userService, IUserService } from '../../services';
 import { GenericError } from '../../common/GenericError';
 import { wrapCatch } from '../../common/Utilities';
-import { DatabaseServiceErrorCode } from '../../constants/error_codes';
 import { INewUserConfig } from '../../models/User';
+import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
+import { ErrorCode } from '../../constants/error_codes';
 
 class UserController {
 
     private readonly _userService: IUserService;
+    private readonly _errorFactory: ErrorFactoryBase;
 
-    constructor(service: IUserService) {
+    constructor(
+        service: IUserService,
+        errorFactory: ErrorFactoryBase
+    ) {
         this._userService = service;
     }
 
     public createUser: RequestHandler = wrapCatch(async (req, res, next) => {
 
         if (await this._userService.findByEmail(req.body.email)) {
-            throw new GenericError({
-                code: DatabaseServiceErrorCode.RECORD_ALREADY_EXISTS,
+            throw this._errorFactory.build(ErrorCode.RECORD_ALREADY_EXISTS, {
                 message: 'A user with that email already exists.',
-                httpStatus: 422,
             });
         }
 
@@ -46,6 +49,9 @@ class UserController {
 
 }
 
-const userController = new UserController(userService);
+const userController = new UserController(
+    userService,
+    globalErrorFactory
+);
 
 export default userController;

@@ -1,19 +1,16 @@
 import { Strategy as LocalStrategy, IStrategyOptions, VerifyFunction } from 'passport-local';
 import { GenericError } from '../../common/GenericError';
-import { AuthenticationErrorCode, DatabaseServiceErrorCode } from '../../constants/error_codes';
 import { userService, authService } from '../../services';
 import { wrapCatch } from '../../common/Utilities';
+import { globalErrorFactory } from '../../common/ErrorFactory';
+import { ErrorCode } from '../../constants/error_codes';
 
 const generateAuthFailedError = (): GenericError => {
 
     const message = `We were unable to authenticate you. \
 Please double check your credentials and try again`;
 
-    return new GenericError({
-        message,
-        httpStatus: 422,
-        code: AuthenticationErrorCode.AUTHENTICATION_FAILED,
-    });
+    return globalErrorFactory.build(ErrorCode.AUTHENTICATION_FAILED, { message });
 
 };
 
@@ -33,8 +30,7 @@ const verifyLocalAuth: VerifyFunction = wrapCatch(async (email, password, done) 
     const user = await userService.findByEmail(email);
 
     if (!user) {
-        throw new GenericError({
-            code: DatabaseServiceErrorCode.RECORD_NOT_FOUND,
+        globalErrorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
             message: 'Internal Error: User information not found after logging in.',
             httpStatus: 500,
         });

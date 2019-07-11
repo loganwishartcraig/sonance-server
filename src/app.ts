@@ -8,13 +8,14 @@ import sassMiddleware from 'node-sass-middleware';
 import path from 'path';
 import { GenericError } from './common/GenericError';
 import { wrapCatch } from './common/Utilities';
-import { DatabaseServiceErrorCode } from './constants/error_codes';
 import { IUser } from './models';
 import { registerRoutes } from './routes';
 import { userService } from './services';
 import { localStrategy } from './strategies/local';
 
 import passport = require('passport');
+import { globalErrorFactory } from './common/ErrorFactory';
+import { ErrorCode } from './constants/error_codes';
 
 require('dotenv').config();
 
@@ -63,11 +64,7 @@ passport.deserializeUser(wrapCatch(
     const user = await userService.findByEmail(email);
 
     if (!user) {
-      throw new GenericError({
-        httpStatus: 422,
-        code: DatabaseServiceErrorCode.RECORD_NOT_FOUND,
-        message: 'User not found',
-      });
+      throw globalErrorFactory.build(ErrorCode.RECORD_NOT_FOUND);
     }
 
     done(null, user);

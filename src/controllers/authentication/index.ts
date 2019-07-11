@@ -1,10 +1,10 @@
-import { RequestHandler, Request, Response } from 'express-serve-static-core';
+import { Request, RequestHandler, Response } from 'express-serve-static-core';
+import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
+import { wrapCatch } from '../../common/Utilities';
+import { ErrorCode } from '../../constants/error_codes';
+import { IUser } from '../../models';
 import { authService, IAuthenticationService } from '../../services';
 import passport = require('passport');
-import { GenericError } from '../../common/GenericError';
-import { AuthenticationErrorCode } from '../../constants/error_codes';
-import { wrapCatch } from '../../common/Utilities';
-import { IUser } from '../../models';
 
 export interface ILoginBody {
     readonly email: string;
@@ -21,9 +21,14 @@ export interface IRegistrationBody {
 class AuthenticationController {
 
     private readonly _authService: IAuthenticationService;
+    private readonly _errorFactory: ErrorFactoryBase;
 
-    constructor(service: IAuthenticationService) {
+    constructor(
+        service: IAuthenticationService,
+        errorFactory: ErrorFactoryBase
+    ) {
         this._authService = service;
+        this._errorFactory = errorFactory;
     }
 
     public checkAuth: RequestHandler = (req, _res, next) => {
@@ -32,11 +37,7 @@ class AuthenticationController {
             return next();
         }
 
-        return next(new GenericError({
-            code: AuthenticationErrorCode.NOT_AUTHORIZED,
-            message: 'You are not authorized to perform that action',
-            httpStatus: 401,
-        }));
+        return next(this._errorFactory.build(ErrorCode.NOT_AUTHENTICATED));
 
     }
 
@@ -75,11 +76,7 @@ class AuthenticationController {
     ): RequestHandler => (req, res, next) => {
 
         if (!req.isAuthenticated()) {
-            return next(new GenericError({
-                code: AuthenticationErrorCode.NOT_AUTHORIZED,
-                httpStatus: 401,
-                message: 'You are not logged in.',
-            }));
+            return next(this._errorFactory.build(ErrorCode.NOT_AUTHORIZED));
         }
 
         try {
@@ -94,15 +91,14 @@ class AuthenticationController {
             console.error('[AuthenticationController] - matchesAuthenticatedUserId() - Failed to select userId');
         }
 
-        return next(new GenericError({
-            code: AuthenticationErrorCode.NOT_AUTHORIZED,
-            httpStatus: 401,
-            message: 'You are not authorized to view content for that user.',
-        }));
+        return next(this._errorFactory.build(ErrorCode.NOT_AUTHORIZED));
     }
 
 }
 
-const authController = new AuthenticationController(authService);
+const authController = new AuthenticationController(
+    authService,
+    globalErrorFactory
+);
 
 export default authController;

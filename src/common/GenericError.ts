@@ -1,4 +1,4 @@
-interface IGenericError {
+export interface IGenericError {
     readonly code: string;
     readonly message: string;
     readonly httpStatus: number;

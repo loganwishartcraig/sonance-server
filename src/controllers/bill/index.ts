@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
+import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
 import { wrapCatch } from '../../common/Utilities';
-import { billService, IBillService } from '../../services';
-import { INewBillBodyConfig } from '../../models/BillBody';
+import { ErrorCode } from '../../constants/error_codes';
 import { IUser } from '../../models';
-import { GenericError } from '../../common/GenericError';
-import { AuthenticationErrorCode, DatabaseServiceErrorCode } from '../../constants/error_codes';
+import { INewBillBodyConfig } from '../../models/BillBody';
+import { billService, IBillService } from '../../services';
 
 export interface ICreateBillBody {
     bill: INewBillBodyConfig;
@@ -13,9 +13,14 @@ export interface ICreateBillBody {
 class BillController {
 
     private _billService: IBillService;
+    private _errorFactory: ErrorFactoryBase;
 
-    constructor(billService: IBillService) {
+    constructor(
+        billService: IBillService,
+        errorFactory: ErrorFactoryBase
+    ) {
         this._billService = billService;
+        this._errorFactory = errorFactory;
     }
 
     public getAllForUser: RequestHandler = wrapCatch(async (req, res) => {
@@ -33,17 +38,12 @@ class BillController {
         const bill = await this._billService.getById(billId);
 
         if (!bill) {
-            throw new GenericError({
-                code: DatabaseServiceErrorCode.RECORD_NOT_FOUND,
+            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
                 message: 'A bill with the given ID could not be found.',
-                httpStatus: 404,
+                meta: { billId },
             });
         } else if (!bill.createdBy.equals((req.user as IUser)._id)) {
-            throw new GenericError({
-                code: AuthenticationErrorCode.NOT_AUTHORIZED,
-                message: 'You are not authorized to view this bill',
-                httpStatus: 401,
-            });
+            throw this._errorFactory.build(ErrorCode.NOT_AUTHORIZED);
         }
 
         return res.status(200).json({ bill });
@@ -61,6 +61,9 @@ class BillController {
 
 }
 
-const billController = new BillController(billService);
+const billController = new BillController(
+    billService,
+    globalErrorFactory
+);
 
 export default billController;
