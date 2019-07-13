@@ -5,4 +5,4 @@ import { registerResourceRoutes } from './resources';
 export const registerRoutes = (app: Express) => {
     registerApiRoutes(app);
     registerResourceRoutes(app);
-}
+};

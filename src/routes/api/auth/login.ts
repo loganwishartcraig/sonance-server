@@ -2,6 +2,16 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 import authController from '../../../controllers/authentication';
 import validationController from '../../../controllers/validation';
+import { IUser } from '../../../models';
+
+export interface ILoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface ILoginResponse {
+    user: IUser;
+}
 
 const router = Router();
 

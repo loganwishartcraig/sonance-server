@@ -3,6 +3,18 @@ import { check } from 'express-validator';
 import authController from '../../../controllers/authentication';
 import userController from '../../../controllers/user';
 import validationController from '../../../controllers/validation';
+import { IUser } from '../../../models';
+
+export interface IRegistrationRequest {
+    email: string;
+    password: string;
+    displayName: string;
+    avatar: string;
+}
+
+export interface IRegistrationResponse {
+    user: IUser;
+}
 
 const router = Router();
 

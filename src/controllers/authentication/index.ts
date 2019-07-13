@@ -6,18 +6,6 @@ import { IUser } from '../../models';
 import { authService, IAuthenticationService } from '../../services';
 import passport = require('passport');
 
-export interface ILoginBody {
-    readonly email: string;
-    readonly password: string;
-}
-
-export interface IRegistrationBody {
-    readonly email: string;
-    readonly password: string;
-    readonly nameFirst: string;
-    readonly nameLast: string;
-}
-
 class AuthenticationController {
 
     private readonly _authService: IAuthenticationService;

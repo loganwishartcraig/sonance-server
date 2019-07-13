@@ -3,8 +3,8 @@ import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory'
 import { wrapCatch } from '../../common/Utilities';
 import { ErrorCode } from '../../constants/error_codes';
 import { BillBody, IBillBodyConfig, IUser } from '../../models';
-import { ICreateBillPayload, ICreateBillResponse } from '../../routes/api/bills/root/post';
 import { billService, IBillService } from '../../services';
+import { INewBillBodyRequest } from '../../routes/api/types';
 
 class BillController {
 
@@ -68,11 +68,11 @@ class BillController {
         const billConfig = this._resolveBillConfig(req.body, req.user);
         const bill = await this._billService.insert(billConfig);
 
-        return res.status(201).json({ bill } as ICreateBillResponse);
+        return res.status(201).json({ bill });
 
     });
 
-    private _resolveBillConfig({ bill }: ICreateBillPayload, user: IUser): IBillBodyConfig {
+    private _resolveBillConfig({ bill }: INewBillBodyRequest, user: IUser): IBillBodyConfig {
         return {
             lines: [],
             participants: [],

@@ -1,4 +1,4 @@
-import { IBillBody, IBillBodyConfig } from '../../models';
+import { IBillBody, IBillBodyConfig, IBillLineItem } from '../../models';
 import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '../Database';
 
 export interface IBillService extends IDatabaseService<IBillBody, IBillBodyConfig> {

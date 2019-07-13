@@ -2,6 +2,11 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 import validationController from '../../../../controllers/validation';
 import billController from '../../../../controllers/bill';
+import { IBillBody } from '../../../../models';
+
+export interface IGetBillBodyResponse {
+    bill: IBillBody;
+}
 
 const router = Router();
 

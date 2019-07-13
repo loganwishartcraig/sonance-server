@@ -5,7 +5,7 @@ import validationController from '../../../../controllers/validation';
 import { IBillBody } from '../../../../models';
 
 const router = Router();
-export interface ICreateBillPayload {
+export interface INewBillBodyRequest {
     bill: {
         tax: number;
         tip: number;
@@ -14,7 +14,7 @@ export interface ICreateBillPayload {
     };
 }
 
-export interface ICreateBillResponse {
+export interface INewBillBodyResponse {
     bill: IBillBody;
 }
 
