@@ -1,9 +1,9 @@
 import { Strategy as LocalStrategy, IStrategyOptions, VerifyFunction } from 'passport-local';
-import { GenericError } from '../../common/GenericError';
-import { userService, authService } from '../../services';
-import { wrapCatch } from '../../common/Utilities';
-import { globalErrorFactory } from '../../common/ErrorFactory';
-import { ErrorCode } from '../../constants/error_codes';
+import { GenericError } from '@common/GenericError';
+import { globalErrorFactory } from '@common/ErrorFactory';
+import { ErrorCode } from '@constants/error_codes';
+import { wrapCatch } from '@common/Utilities';
+import { authService, userService } from '@services';
 
 const generateAuthFailedError = (): GenericError => {
 

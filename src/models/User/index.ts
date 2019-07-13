@@ -1,7 +1,7 @@
+import { ModelName } from '@constants/model_names';
+import { ModelFactory } from '@models/types';
+import { UserSchema } from '@schemas';
 import { Document, Model, Types } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { UserSchema } from '../../schemas';
-import { ModelFactory } from '../types';
 
 export interface IUser {
     readonly _id: Types.ObjectId;

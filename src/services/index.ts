@@ -1,13 +1,17 @@
 import { createConnection, set as mongooseSet } from 'mongoose';
-import { AuthenticationService, IAuthenticationService } from './Authentication';
+import { DatabaseName } from '@constants/database_names';
+import { UserService } from './User';
+import { AuthenticationService } from './Authentication';
 import { PasswordHashService } from './Authentication/PasswordHash';
 import { PasswordSaltService } from './Authentication/PasswordSalt';
-import { BillService, IBillService } from './Bill';
-import { IUserService, UserService } from './User';
-import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '../models';
-import { DatabaseName } from '../constants/database_names';
+import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '@models';
+import { BillService } from './Bill';
 
 require('dotenv').config();
+
+export { IAuthenticationService } from './Authentication';
+export { IBillService } from './Bill';
+export { IUserService } from './User';
 
 // TODO Extract this into a 'mongoose config' file
 // Sets mongoose configuration flags
@@ -32,7 +36,3 @@ export const authService = new AuthenticationService({
     passwordSaltService: new PasswordSaltService({ connection, modelFactory: passwordSaltModelFactory }),
 });
 export const billService = new BillService({ connection, modelFactory: billBodyModelFactory });
-
-export { IAuthenticationService };
-export { IUserService };
-export { IBillService };

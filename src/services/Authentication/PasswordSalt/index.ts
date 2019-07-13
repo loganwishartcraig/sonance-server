@@ -1,5 +1,5 @@
-import { IPasswordSaltConfig, IPasswordSalt } from '../../../models';
-import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '../../Database';
+import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@services/Database';
+import { IPasswordSalt, IPasswordSaltConfig } from '@models';
 
 export type IPasswordSaltService = IDatabaseService<IPasswordSalt, IPasswordSaltConfig>;
 export type IPasswordSaltServiceConfig = IDatabaseServiceConfig<IPasswordSalt>;

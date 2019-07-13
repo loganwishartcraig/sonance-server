@@ -1,10 +1,10 @@
+import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
+import { wrapCatch } from '@common/Utilities';
+import { ErrorCode } from '@constants/error_codes';
+import { BillBody, IBillBodyConfig, IUser } from '@models';
+import { INewBillBodyRequest } from '@routes/api';
+import { billService, IBillService } from '@services';
 import { RequestHandler } from 'express';
-import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
-import { wrapCatch } from '../../common/Utilities';
-import { ErrorCode } from '../../constants/error_codes';
-import { BillBody, IBillBodyConfig, IUser } from '../../models';
-import { billService, IBillService } from '../../services';
-import { INewBillBodyRequest } from '../../routes/api/types';
 
 class BillController {
 
@@ -74,8 +74,8 @@ class BillController {
 
     private _resolveBillConfig({ bill }: INewBillBodyRequest, user: IUser): IBillBodyConfig {
         return {
-            lines: [],
-            participants: [],
+            lines: [] as any,
+            participants: [] as any,
             ...bill,
             createdBy: user._id,
         };
@@ -84,9 +84,7 @@ class BillController {
 
 }
 
-const billController = new BillController(
+export const billController = new BillController(
     billService,
     globalErrorFactory
 );
-
-export default billController;

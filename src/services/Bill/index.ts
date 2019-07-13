@@ -1,5 +1,5 @@
-import { IBillBody, IBillBodyConfig, IBillLineItem } from '../../models';
-import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '../Database';
+import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@services/Database';
+import { IBillBody, IBillBodyConfig } from '@models';
 
 export interface IBillService extends IDatabaseService<IBillBody, IBillBodyConfig> {
     getByCreatorId(userId: string): Promise<IBillBody[]>;

@@ -1,0 +1,83 @@
+{
+    "compilerOptions": {
+        "watch": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./src",
+        "paths": {
+            "node_modules/*": [
+                "../node_modules/*"
+            ],
+            "@common/*": [
+                "common/*"
+            ],
+            "@constants/*": [
+                "constants/*"
+            ],
+            "@controllers": [
+                "controllers"
+            ],
+            "@controllers/*": [
+                "controllers/*"
+            ],
+            "@models": [
+                "models"
+            ],
+            "@models/*": [
+                "models/*"
+            ],
+            "@routes/*": [
+                "routes/*"
+            ],
+            "@schemas": [
+                "schemas"
+            ],
+            "@schemas/*": [
+                "schemas/*"
+            ],
+            "@services": [
+                "services"
+            ],
+            "@services/*": [
+                "services/*"
+            ],
+            "@strategies": [
+                "strategies"
+            ],
+            "@strategies/*": [
+                "strategies/*"
+            ]
+        },
+        "module": "CommonJS",
+        "target": "es6",
+        "lib": [
+            "esnext",
+        ],
+        "allowJs": true,
+        "checkJs": true,
+        "alwaysStrict": true,
+        // "diagnostics": true,
+        // "extendedDiagnostics": true,
+        "strictPropertyInitialization": false,
+        "esModuleInterop": true,
+        "locale": "en",
+        "moduleResolution": "node",
+        "rootDir": "src",
+        "sourceMap": true,
+        "sourceRoot": "src",
+        "skipLibCheck": true,
+        "strict": true,
+        "typeRoots": [
+            "node_modules/@types",
+            "custom_typings"
+        ],
+        "outDir": "./dist"
+    },
+    "include": [
+        "./src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "public",
+        "**/*.spec.ts"
+    ]
+}

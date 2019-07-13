@@ -1,9 +1,8 @@
 import { RequestHandler } from 'express-serve-static-core';
 import { validationResult } from 'express-validator';
-import { GenericError } from '../../common/GenericError';
-import { ErrorCode } from '../../constants/error_codes';
-import { wrapCatch } from '../../common/Utilities';
-import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
+import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
+import { wrapCatch } from '@common/Utilities';
+import { ErrorCode } from '@constants/error_codes';
 
 class ValidationController {
 
@@ -29,6 +28,4 @@ class ValidationController {
 
 }
 
-const validationController = new ValidationController(globalErrorFactory);
-
-export default validationController;
+export const validationController = new ValidationController(globalErrorFactory);

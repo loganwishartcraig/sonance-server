@@ -1,8 +1,7 @@
+import { IBillBody } from '@models';
 import { Router } from 'express';
 import { check } from 'express-validator';
-import billController from '../../../../controllers/bill';
-import validationController from '../../../../controllers/validation';
-import { IBillBody } from '../../../../models';
+import { validationController, billController } from '@controllers';
 
 export interface IGetBillBodyResponse {
     bill: IBillBody;
@@ -22,3 +21,4 @@ router.get(
 );
 
 export { router as getBillRouter };
+

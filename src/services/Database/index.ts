@@ -1,5 +1,5 @@
 import { Connection, Document, Model, QueryFindOneAndUpdateOptions } from 'mongoose';
-import { ModelFactory } from '../../models/types';
+import { ModelFactory } from '@models/types';
 
 export interface IDatabaseServiceConfig<T = any> {
     readonly connection: Connection;

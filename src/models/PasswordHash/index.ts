@@ -1,7 +1,7 @@
+import { ModelName } from '@constants/model_names';
+import { ModelFactory } from '@models/types';
+import { PasswordHashSchema } from '@schemas';
 import { Document, Model } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { PasswordHashSchema } from '../../schemas';
-import { ModelFactory } from '../types';
 
 export interface IPasswordHash {
     readonly _id: string;

@@ -5,7 +5,7 @@
     "start": "npm run dev",
     "dev": "nodemon --inspect=9230 ./src/bin/www.ts",
     "db": "mongod",
-    "build": "tsc -p tsconfig.dev.json"
+    "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.1",
@@ -28,6 +28,7 @@
     "express-validator": "^6.1.1",
     "hbs": "^4.0.4",
     "http-errors": "^1.7.3",
+    "module-alias": "^2.2.0",
     "mongodb": "^3.2.7",
     "mongoose": "^5.6.3",
     "morgan": "~1.9.0",

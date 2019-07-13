@@ -1,9 +1,7 @@
+import { IUser } from '@models';
 import { Router } from 'express';
 import { check } from 'express-validator';
-import authController from '../../../controllers/authentication';
-import userController from '../../../controllers/user';
-import validationController from '../../../controllers/validation';
-import { IUser } from '../../../models';
+import { validationController, userController, authController } from '@controllers';
 
 export interface IRegistrationRequest {
     email: string;

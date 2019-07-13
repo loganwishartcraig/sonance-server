@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
-import schemaValidators from '../../common/SchemaValidators';
-import { IUser } from '../../models';
+import { IUser } from '@models';
+import schemaValidators from '@common/SchemaValidators';
 
 const userSchema = new Schema<IUser>({
     displayName: { type: String, validate: schemaValidators.isLength({ min: 1, max: 250 }) },

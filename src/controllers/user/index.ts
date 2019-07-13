@@ -1,9 +1,9 @@
+import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
+import { wrapCatch } from '@common/Utilities';
+import { ErrorCode } from '@constants/error_codes';
+import { IUserService, userService } from '@services';
 import { RequestHandler } from 'express-serve-static-core';
-import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
-import { wrapCatch } from '../../common/Utilities';
-import { ErrorCode } from '../../constants/error_codes';
-import { IUserConfig } from '../../models';
-import { IUserService, userService } from '../../services';
+import { IUserConfig } from '@models';
 
 class UserController {
 
@@ -49,9 +49,7 @@ class UserController {
 
 }
 
-const userController = new UserController(
+export const userController = new UserController(
     userService,
     globalErrorFactory
 );
-
-export default userController;

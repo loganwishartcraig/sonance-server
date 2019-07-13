@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import { authRoutes } from './auth';
-import authController from '../../controllers/authentication';
 import { billRoutes } from './bill';
+import { authController } from '@controllers';
 
 export const BASE_API_ROUTE = 'api/1' as const;
 
@@ -41,3 +41,5 @@ export const registerApiRoutes = (app: Express) => {
     );
 
 };
+
+export * from './types';

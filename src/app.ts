@@ -6,16 +6,29 @@ import createError from 'http-errors';
 import logger from 'morgan';
 import sassMiddleware from 'node-sass-middleware';
 import path from 'path';
-import { GenericError } from './common/GenericError';
-import { wrapCatch } from './common/Utilities';
-import { IUser } from './models';
-import { registerRoutes } from './routes';
-import { userService } from './services';
-import { localStrategy } from './strategies/local';
+
+const moduleAlias = require('module-alias');
+moduleAlias.addAliases({
+  '@common': path.join(__dirname, 'common'),
+  '@constants': path.join(__dirname, 'constants'),
+  '@controllers': path.join(__dirname, 'controllers'),
+  '@models': path.join(__dirname, 'models'),
+  '@routes': path.join(__dirname, 'routes'),
+  '@schemas': path.join(__dirname, 'schemas'),
+  '@services': path.join(__dirname, 'services'),
+  '@strategies': path.join(__dirname, 'strategies'),
+});
+
+import { globalErrorFactory } from '@common/ErrorFactory';
+import { GenericError } from '@common/GenericError';
+import { wrapCatch } from '@common/Utilities';
+import { ErrorCode } from '@constants/error_codes';
+import { IUser } from '@models';
+import { registerApiRoutes } from '@routes/api';
+import { userService } from '@services';
+import { localStrategy } from '@strategies';
 
 import passport = require('passport');
-import { globalErrorFactory } from './common/ErrorFactory';
-import { ErrorCode } from './constants/error_codes';
 
 require('dotenv').config();
 
@@ -72,7 +85,7 @@ passport.deserializeUser(wrapCatch(
   })
 );
 
-registerRoutes(app);
+registerApiRoutes(app);
 
 const notFoundHandler: RequestHandler = (req, res, next) => {
   next(createError(404));

@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { IBillParticipant } from '../../models';
+import { IBillParticipant } from '@models';
+import { ModelName } from '@constants/model_names';
 
 const billParticipantSchema = new Schema<IBillParticipant>({
     participant: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },

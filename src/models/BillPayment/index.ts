@@ -1,8 +1,8 @@
+import { ModelName } from '@constants/model_names';
+import { ModelFactory } from '@models/types';
+import { IUser } from '@models/User';
+import { BillPaymentSchema } from '@schemas';
 import { Document, Model, Types } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { BillPaymentSchema } from '../../schemas';
-import { ModelFactory } from '../types';
-import { IUser } from '../User';
 
 export enum BillPaymentMethod {
     PAYPAL,

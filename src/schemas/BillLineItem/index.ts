@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
-import schemaValidators from '../../common/SchemaValidators';
-import { ModelName } from '../../constants/model_names';
-import { IBillLineItem } from '../../models';
+import { IBillLineItem } from '@models';
+import { ModelName } from '@constants/model_names';
+import schemaValidators from '@common/SchemaValidators';
 
 const billLineItemSchema = new Schema<IBillLineItem>({
     createdBy: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },

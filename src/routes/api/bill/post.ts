@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
-import { IBillBody } from '../../../models';
-import validationController from '../../../controllers/validation';
-import billController from '../../../controllers/bill';
+import { IBillBody } from '@models';
+import { validationController, billController } from '@controllers';
 
 const router = Router();
 export interface INewBillBodyRequest {
@@ -10,7 +9,7 @@ export interface INewBillBodyRequest {
         tax: number;
         tip: number;
         lines?: unknown[];
-        participants: unknown[];
+        participants?: unknown[];
     };
 }
 

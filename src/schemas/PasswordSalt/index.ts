@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { IPasswordSalt } from '../../models';
+import { IPasswordSalt } from '@models';
 
 const passwordSaltSchema = new Schema<IPasswordSalt>({
     email: { type: String, required: true },

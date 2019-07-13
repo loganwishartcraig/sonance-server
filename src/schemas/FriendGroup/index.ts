@@ -1,8 +1,8 @@
+import schemaValidators from '@common/SchemaValidators';
+import { ModelName } from '@constants/model_names';
+import { IFriendGroup } from '@models';
+import friendGroupMemberSchema from '@schemas/FriendGroupMember';
 import { Schema } from 'mongoose';
-import schemaValidators from '../../common/SchemaValidators';
-import friendGroupMemberSchema from '../FriendGroupMember';
-import { IFriendGroup } from '../../models';
-import { ModelName } from '../../constants/model_names';
 
 const friendGroupSchema = new Schema<IFriendGroup>({
     createdBy: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },

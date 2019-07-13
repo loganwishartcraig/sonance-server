@@ -1,13 +1,12 @@
-import { Document, Model } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { FriendshipSchema } from '../../schemas';
-import { ModelFactory } from '../types';
-import { IUser } from '../User';
+import { ModelName } from '@constants/model_names';
+import { ModelFactory } from '@models/types';
+import { FriendshipSchema } from '@schemas';
+import { Document, Model, Types } from 'mongoose';
 
 export interface IFriendship {
     readonly _id: string;
-    readonly to: IUser;
-    readonly from: IUser;
+    readonly to: Types.ObjectId;
+    readonly from: Types.ObjectId;
     readonly createdOn: Date;
 }
 

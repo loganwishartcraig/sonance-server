@@ -1,5 +1,5 @@
-import { IUserConfig, IUser } from '../../models';
-import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '../Database';
+import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@services/Database';
+import { IUser, IUserConfig } from '@models';
 
 export interface IUserService extends IDatabaseService<IUser, IUserConfig> {
     findByEmail(email: string): Promise<IUser | void>;

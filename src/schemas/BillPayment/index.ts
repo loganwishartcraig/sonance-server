@@ -1,7 +1,7 @@
+import schemaValidators from '@common/SchemaValidators';
+import { ModelName } from '@constants/model_names';
+import { BillPaymentMethod, IBillPayment } from '@models';
 import { Schema } from 'mongoose';
-import schemaValidators from '../../common/SchemaValidators';
-import { ModelName } from '../../constants/model_names';
-import { BillPaymentMethod, IBillPayment } from '../../models';
 
 const billPaymentSchema = new Schema<IBillPayment>({
     paidBy: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },

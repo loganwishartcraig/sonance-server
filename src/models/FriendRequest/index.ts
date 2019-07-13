@@ -1,13 +1,12 @@
+import { ModelName } from '@constants/model_names';
+import { ModelFactory } from '@models/types';
+import { FriendRequestSchema } from '@schemas';
 import { Document, Model, Types } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { FriendRequestSchema } from '../../schemas';
-import { ModelFactory } from '../types';
-import { IUser } from '../User';
 
 export interface IFriendRequest {
     readonly _id: Types.ObjectId;
-    readonly fromUser: IUser;
-    readonly toUser: IUser;
+    readonly fromUser: Types.ObjectId;
+    readonly toUser: Types.ObjectId;
     readonly invitedOn: Date;
     readonly respondedOn: Date | void;
     readonly rejected: boolean | void;

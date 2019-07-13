@@ -1,6 +1,6 @@
+import { ModelName } from '@constants/model_names';
+import { IFriendRequest } from '@models';
 import { Schema } from 'mongoose';
-import { IFriendRequest } from '../../models';
-import { ModelName } from '../../constants/model_names';
 
 const friendRequestSchema = new Schema<IFriendRequest>({
     toUser: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },

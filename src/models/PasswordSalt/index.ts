@@ -1,7 +1,7 @@
+import { ModelName } from '@constants/model_names';
+import { ModelFactory } from '@models/types';
+import { PasswordSaltSchema } from '@schemas';
 import { Document, Model } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { PasswordSaltSchema } from '../../schemas';
-import { ModelFactory } from '../types';
 
 export interface IPasswordSalt {
     readonly _id: string;

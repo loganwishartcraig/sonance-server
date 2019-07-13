@@ -1,11 +1,10 @@
 import { Document, Model, Types } from 'mongoose';
-import { ModelName } from '../../constants/model_names';
-import { IBillLineItem, IBillParticipant } from '../../models';
-import { BillBodySchema } from '../../schemas';
-import { ModelFactory } from '../types';
-import { IUser } from '../User';
-import { IBillLineItemConfig } from '../BillLineItem';
-import { IBillParticipantConfig } from '../BillParticipant';
+import { IBillLineItem, IBillLineItemConfig } from '@models/BillLineItem';
+import { IBillParticipant, IBillParticipantConfig } from '@models/BillParticipant';
+import { ModelFactory } from '@models/types';
+import { ModelName } from '@constants/model_names';
+import { BillBodySchema } from '@schemas';
+import { IUser } from '@models/User';
 
 export interface IBillBody {
     readonly _id: Types.ObjectId;

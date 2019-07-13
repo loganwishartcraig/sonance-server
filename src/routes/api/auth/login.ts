@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import authController from '../../../controllers/authentication';
-import validationController from '../../../controllers/validation';
-import { IUser } from '../../../models';
+import { IUser } from '@models';
+import { validationController, authController } from '@controllers';
 
 export interface ILoginRequest {
     email: string;

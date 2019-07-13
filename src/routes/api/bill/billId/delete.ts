@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import billController from '../../../../controllers/bill';
-import validationController from '../../../../controllers/validation';
+import { validationController, billController } from '@controllers';
 
 const router = Router();
 
@@ -17,3 +16,4 @@ router.delete(
 );
 
 export { router as deleteBillRoute };
+

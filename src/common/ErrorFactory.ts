@@ -1,5 +1,5 @@
+import { ErrorCode } from '@constants/error_codes';
 import { GenericError, IGenericError } from './GenericError';
-import { ErrorCode } from '../constants/error_codes';
 
 export abstract class ErrorFactoryBase {
     abstract build(code: ErrorCode, overrides?: Partial<IGenericError>): GenericError;

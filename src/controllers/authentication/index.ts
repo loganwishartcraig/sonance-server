@@ -1,10 +1,11 @@
-import { Request, RequestHandler, Response } from 'express-serve-static-core';
-import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
-import { wrapCatch } from '../../common/Utilities';
-import { ErrorCode } from '../../constants/error_codes';
-import { IUser } from '../../models';
-import { authService, IAuthenticationService } from '../../services';
 import passport = require('passport');
+import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
+import { wrapCatch } from '@common/Utilities';
+import { ErrorCode } from '@constants/error_codes';
+import { IUser } from '@models';
+import { authService, IAuthenticationService } from '@services';
+import { RequestHandler, Response } from 'express';
+import { Request } from 'express-serve-static-core';
 
 class AuthenticationController {
 
@@ -84,9 +85,7 @@ class AuthenticationController {
 
 }
 
-const authController = new AuthenticationController(
+export const authController = new AuthenticationController(
     authService,
     globalErrorFactory
 );
-
-export default authController;
