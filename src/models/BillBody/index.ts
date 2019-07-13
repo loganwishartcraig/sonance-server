@@ -4,8 +4,8 @@ import { IBillLineItem, IBillParticipant } from '../../models';
 import { BillBodySchema } from '../../schemas';
 import { ModelFactory } from '../types';
 import { IUser } from '../User';
-import { INewBillLineItem } from '../BillLineItem';
-import { INewBillParticipantConfig } from '../BillParticipant';
+import { IBillLineItemConfig } from '../BillLineItem';
+import { IBillParticipantConfig } from '../BillParticipant';
 
 export interface IBillBody {
     readonly _id: Types.ObjectId;
@@ -19,8 +19,8 @@ export interface IBillBody {
 }
 
 export type IBillBodyConfig = Omit<IBillBody, '_id' | 'createdOn' | 'lines' | 'participants'> & {
-    lines: INewBillLineItem[];
-    participants: INewBillParticipantConfig[];
+    lines: IBillLineItemConfig[];
+    participants: IBillParticipantConfig[];
 };
 
 export const billBodyModelFactory: ModelFactory<IBillBody> = connection =>

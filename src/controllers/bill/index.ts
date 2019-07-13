@@ -2,10 +2,9 @@ import { RequestHandler } from 'express';
 import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
 import { wrapCatch } from '../../common/Utilities';
 import { ErrorCode } from '../../constants/error_codes';
-import { BillBody, IBillBodyConfig } from '../../models/BillBody';
+import { BillBody, IBillBodyConfig, IUser } from '../../models';
 import { ICreateBillPayload, ICreateBillResponse } from '../../routes/api/bills/root/post';
 import { billService, IBillService } from '../../services';
-import { IUser } from '../../models';
 
 class BillController {
 

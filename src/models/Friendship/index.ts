@@ -11,7 +11,7 @@ export interface IFriendship {
     readonly createdOn: Date;
 }
 
-export type INewFriendshipConfig = Omit<IFriendship, '_id'>;
+export type IFriendshipConfig = Omit<IFriendship, '_id'>;
 
 export const friendshipModelFactory: ModelFactory<IFriendship> = connection =>
     connection.model<Document, Model<Document, IFriendship>>(ModelName.FRIENDSHIP, FriendshipSchema);

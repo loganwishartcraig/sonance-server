@@ -1,4 +1,4 @@
-import { Document, Model } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 import { ModelName } from '../../constants/model_names';
 import { BillPaymentSchema } from '../../schemas';
 import { ModelFactory } from '../types';
@@ -9,7 +9,7 @@ export enum BillPaymentMethod {
 }
 
 export interface IBillPayment {
-    readonly _id: string;
+    readonly _id: Types.ObjectId;
     readonly paidBy: IUser;
     readonly paidTo: IUser;
     readonly paidOn: Date;
@@ -17,7 +17,7 @@ export interface IBillPayment {
     readonly method: BillPaymentMethod;
 }
 
-export type INewBillPayment = Omit<IBillPayment, '_id'>;
+export type IBillPaymentConfig = Omit<IBillPayment, '_id'>;
 
 export const billPaymentModelFactory: ModelFactory<IBillPayment> = connection =>
     connection.model<Document, Model<Document, IBillPayment>>(ModelName.BILL_PAYMENT, BillPaymentSchema);

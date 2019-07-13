@@ -10,7 +10,7 @@ export interface IPasswordHash {
 }
 
 // All fields required for creation
-export type INewPasswordHashConfig = Omit<IPasswordHash, '_id'>;
+export type IPasswordHashConfig = Omit<IPasswordHash, '_id'>;
 
 export const passwordHashModelFactory: ModelFactory<IPasswordHash> = connection =>
     connection.model<Document, Model<Document, IPasswordHash>>(ModelName.PASSWORD_HASH, PasswordHashSchema);

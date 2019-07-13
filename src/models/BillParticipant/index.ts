@@ -9,4 +9,4 @@ export interface IBillParticipant {
     readonly leftOn: Date | void;
 }
 
-export type INewBillParticipantConfig = Omit<IBillParticipant, '_id'>;
+export type IBillParticipantConfig = Omit<IBillParticipant, '_id'>;

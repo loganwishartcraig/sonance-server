@@ -1,10 +1,9 @@
 import { RequestHandler } from 'express-serve-static-core';
-import { userService, IUserService } from '../../services';
-import { GenericError } from '../../common/GenericError';
-import { wrapCatch } from '../../common/Utilities';
-import { INewUserConfig } from '../../models/User';
 import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
+import { wrapCatch } from '../../common/Utilities';
 import { ErrorCode } from '../../constants/error_codes';
+import { IUserConfig } from '../../models';
+import { IUserService, userService } from '../../services';
 
 class UserController {
 
@@ -16,6 +15,7 @@ class UserController {
         errorFactory: ErrorFactoryBase
     ) {
         this._userService = service;
+        this._errorFactory = errorFactory;
     }
 
     public createUser: RequestHandler = wrapCatch(async (req, res, next) => {
@@ -43,7 +43,7 @@ class UserController {
         email,
         displayName,
         avatar,
-    }: any): INewUserConfig {
+    }: any): IUserConfig {
         return { email, displayName, avatar };
     }
 

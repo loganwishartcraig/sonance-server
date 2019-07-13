@@ -1,13 +1,13 @@
-import { INewUserConfig, IUser } from '../../models';
+import { IUserConfig, IUser } from '../../models';
 import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '../Database';
 
-export interface IUserService extends IDatabaseService<IUser, INewUserConfig> {
+export interface IUserService extends IDatabaseService<IUser, IUserConfig> {
     findByEmail(email: string): Promise<IUser | void>;
 }
 export type IUserServiceConfig = IDatabaseServiceConfig<IUser>;
 
 export class UserService
-    extends DatabaseService<IUser, INewUserConfig>
+    extends DatabaseService<IUser, IUserConfig>
     implements IUserService {
 
     constructor(config: IUserServiceConfig) {

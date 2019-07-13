@@ -12,4 +12,4 @@ export interface IBillLineItem {
     readonly price: number;
 }
 
-export type INewBillLineItem = Omit<IBillLineItem, '_id' | 'createdOn'>;
+export type IBillLineItemConfig = Omit<IBillLineItem, '_id' | 'createdOn'>;

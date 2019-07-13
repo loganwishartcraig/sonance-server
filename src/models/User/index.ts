@@ -11,7 +11,7 @@ export interface IUser {
     readonly avatar: string;
 }
 
-export type INewUserConfig = Omit<IUser, '_id' | 'createdOn'>;
+export type IUserConfig = Omit<IUser, '_id' | 'createdOn'>;
 
 export const userModelFactory: ModelFactory<IUser> = connection =>
     connection.model<Document, Model<Document, IUser>>(ModelName.USER, UserSchema);
