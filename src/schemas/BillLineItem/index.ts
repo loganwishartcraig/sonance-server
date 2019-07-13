@@ -7,7 +7,7 @@ const billLineItemSchema = new Schema<IBillLineItem>({
     createdBy: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },
     createdOn: { type: Date, required: true, default: Date.now },
     claimedBy: { type: Schema.Types.ObjectId, ref: ModelName.USER },
-    deletedOn: { type: Date, required: true },
+    deletedOn: { type: Date },
     isShared: { type: Boolean, required: true, default: false },
     quantity: {
         type: Number,

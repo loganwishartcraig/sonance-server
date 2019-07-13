@@ -2,8 +2,21 @@ import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
 import billController from '../../../../controllers/bill';
 import validationController from '../../../../controllers/validation';
+import { IBillBody } from '../../../../models';
 
 const router = Router();
+export interface ICreateBillPayload {
+    bill: {
+        tax: number;
+        tip: number;
+        lines?: unknown[];
+        participants: unknown[];
+    };
+}
+
+export interface ICreateBillResponse {
+    bill: IBillBody;
+}
 
 const bodySchemaValidation: Record<string, ValidationParamSchema> = {
     bill: {
@@ -11,11 +24,6 @@ const bodySchemaValidation: Record<string, ValidationParamSchema> = {
         custom: {
             options: (value, { req, location, path }) => !!value,
         },
-    },
-    'bill.createdBy': {
-        in: 'body',
-        errorMessage: 'Bill cannot be created by an unknown user.',
-        isMongoId: true,
     },
     'bill.tax': {
         in: 'body',
@@ -49,4 +57,3 @@ router.post(
 );
 
 export { router as rootPostRouter };
-

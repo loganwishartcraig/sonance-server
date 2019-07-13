@@ -1,10 +1,12 @@
-import { IUser } from '../User';
+import { Types } from 'mongoose';
 
 export interface IBillParticipant {
-    readonly _id: string;
-    readonly participant: IUser;
+    readonly _id: Types.ObjectId;
+    readonly participant: Types.ObjectId;
     readonly joinedOn: Date;
-    readonly invitedBy: IUser | void;
+    readonly invitedBy: Types.ObjectId | void;
     readonly invitedOn: Date | void;
     readonly leftOn: Date | void;
 }
+
+export type INewBillParticipantConfig = Omit<IBillParticipant, '_id'>;

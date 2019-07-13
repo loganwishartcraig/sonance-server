@@ -12,6 +12,7 @@ require('dotenv').config();
 // TODO Extract this into a 'mongoose config' file
 // Sets mongoose configuration flags
 mongooseSet('useCreateIndex', true);
+mongooseSet('useFindAndModify', false);
 
 const connection = createConnection(
     `mongodb://${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${DatabaseName.MODELS}`,

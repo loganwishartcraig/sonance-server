@@ -2,13 +2,10 @@ import { RequestHandler } from 'express';
 import { ErrorFactoryBase, globalErrorFactory } from '../../common/ErrorFactory';
 import { wrapCatch } from '../../common/Utilities';
 import { ErrorCode } from '../../constants/error_codes';
-import { IUser } from '../../models';
-import { INewBillBodyConfig } from '../../models/BillBody';
+import { BillBody, IBillBodyConfig } from '../../models/BillBody';
+import { ICreateBillPayload, ICreateBillResponse } from '../../routes/api/bills/root/post';
 import { billService, IBillService } from '../../services';
-
-export interface ICreateBillBody {
-    bill: INewBillBodyConfig;
-}
+import { IUser } from '../../models';
 
 class BillController {
 
@@ -42,7 +39,7 @@ class BillController {
                 message: 'A bill with the given ID could not be found.',
                 meta: { billId },
             });
-        } else if (!bill.createdBy.equals((req.user as IUser)._id)) {
+        } else if (!BillBody.CreatedByUser(bill, req.user)) {
             throw this._errorFactory.build(ErrorCode.NOT_AUTHORIZED);
         }
 
@@ -50,14 +47,41 @@ class BillController {
 
     });
 
+    public deleteByIdForUser: RequestHandler = wrapCatch(async (req, res) => {
+
+        const { params: { billId } } = req;
+
+        const existing = await this._billService.getById(billId);
+
+        if (!existing) {
+            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+        } else if (!BillBody.CreatedByUser(existing, req.user)) {
+            throw this._errorFactory.build(ErrorCode.NOT_AUTHORIZED);
+        }
+
+        await this._billService.removeById(billId);
+
+        return res.sendStatus(204);
+    });
+
     public createBill: RequestHandler = wrapCatch(async (req, res) => {
 
-        const { bill: billConfig } = req.body;
+        const billConfig = this._resolveBillConfig(req.body, req.user);
         const bill = await this._billService.insert(billConfig);
 
-        return res.json({ bill });
+        return res.status(201).json({ bill } as ICreateBillResponse);
 
     });
+
+    private _resolveBillConfig({ bill }: ICreateBillPayload, user: IUser): IBillBodyConfig {
+        return {
+            lines: [],
+            participants: [],
+            ...bill,
+            createdBy: user._id,
+        };
+
+    }
 
 }
 
