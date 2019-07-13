@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import { authRoutes } from './auth';
-import { billRoutes } from './bills';
 import authController from '../../controllers/authentication';
+import { billRoutes } from './bill';
 
 export const BASE_API_ROUTE = 'api/1' as const;
 

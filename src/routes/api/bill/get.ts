@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import authController from '../../../../controllers/authentication';
-import billController from '../../../../controllers/bill';
-import validationController from '../../../../controllers/validation';
-import { IBillBody } from '../../../../models';
+import authController from '../../../controllers/authentication';
+import billController from '../../../controllers/bill';
+import validationController from '../../../controllers/validation';
+import { IBillBody } from '../../../models';
 
 export interface IGetAllBillBodiesResponse {
     bills: IBillBody[];

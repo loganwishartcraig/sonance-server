@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
-import billController from '../../../../controllers/bill';
-import validationController from '../../../../controllers/validation';
-import { IBillBody } from '../../../../models';
+import { IBillBody } from '../../../models';
+import validationController from '../../../controllers/validation';
+import billController from '../../../controllers/bill';
 
 const router = Router();
 export interface INewBillBodyRequest {
