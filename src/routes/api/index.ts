@@ -3,7 +3,7 @@ import { authRoutes } from './auth';
 import { billRoutes } from './bill';
 import { authController } from '@controllers';
 
-export const BASE_API_ROUTE = 'api/1' as const;
+const BASE_API_ROUTE = 'api/1' as const;
 
 const enableCORS = (app: Express) => {
 

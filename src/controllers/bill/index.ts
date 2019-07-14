@@ -74,8 +74,8 @@ class BillController {
 
     private _resolveBillConfig({ bill }: INewBillBodyRequest, user: IUser): IBillBodyConfig {
         return {
-            lines: [] as any,
-            participants: [] as any,
+            lines: [],
+            participants: [],
             ...bill,
             createdBy: user._id,
         };

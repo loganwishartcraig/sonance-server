@@ -8,8 +8,8 @@ export interface INewBillBodyRequest {
     bill: {
         tax: number;
         tip: number;
-        lines?: unknown[];
-        participants?: unknown[];
+        lines?: any[];
+        participants?: any[];
     };
 }
 
