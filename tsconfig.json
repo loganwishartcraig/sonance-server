@@ -25,6 +25,9 @@
             "@models/*": [
                 "models/*"
             ],
+            "@routes": [
+                "routes"
+            ],
             "@routes/*": [
                 "routes/*"
             ],

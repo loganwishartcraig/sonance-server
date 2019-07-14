@@ -24,11 +24,11 @@ import { GenericError } from '@common/GenericError';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
 import { IUser } from '@models';
-import { registerApiRoutes } from '@routes/api';
 import { userService } from '@services';
 import { localStrategy } from '@strategies';
 
 import passport = require('passport');
+import { registerRoutes } from '@routes';
 
 require('dotenv').config();
 
@@ -85,7 +85,7 @@ passport.deserializeUser(wrapCatch(
   })
 );
 
-registerApiRoutes(app);
+registerRoutes(app);
 
 const notFoundHandler: RequestHandler = (req, res, next) => {
   next(createError(404));
