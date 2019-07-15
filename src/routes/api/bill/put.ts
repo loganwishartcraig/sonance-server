@@ -14,7 +14,7 @@ router.put(
     validationController.ensureNoErrors,
     (req: Request, res: Response) => {
         console.warn(req.body);
-        return res.sendStatus(204);
+        return res.sendStatus(500);
     }
 );
 

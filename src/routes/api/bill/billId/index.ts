@@ -6,17 +6,21 @@ import { validationController } from '@controllers';
 import { lineRouter } from './lines';
 
 const router = Router();
+
 const validation = [
-    check('billId', 'No valid bill ID was provided').isMongoId()
+    check('billId', 'No valid bill ID was provided').isMongoId(),
 ];
 
+const routes: Router[] = [
+    getBillRouter,
+    deleteBillRoute,
+];
 
 router.use(
     '/:billId',
     validation,
     validationController.ensureNoErrors,
-    getBillRouter,
-    deleteBillRoute,
+    routes,
     lineRouter
 );
 
