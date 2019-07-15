@@ -2,7 +2,7 @@ import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
 import { GenericError } from '@common/GenericError';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
-import { BillBody, IBillBody, IBillBodyConfig, IBillLineItemConfig, IUser } from '@models';
+import { BillBody, IBillBody, IBillBodyConfig, IBillLineItem, IBillLineItemConfig, IUser } from '@models';
 import { INewBillBodyRequest, INewBillLineItemRequest } from '@routes/api';
 import { billService, IBillService } from '@services';
 import { RequestHandler } from 'express';
@@ -51,15 +51,7 @@ class BillController {
 
     public getLineForBill: RequestHandler = wrapCatch(async (req, res) => {
 
-        const { params: { billId, lineId } } = req;
-
-        const { lines } = await this._resolveBillCreatedByUser(billId, req.user);
-
-        const [line] = lines.filter(({ _id }) => _id.toHexString() === lineId);
-
-        if (!line) {
-            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
-        }
+        const line = await this._resolveLineById(req.params, req.user);
 
         return res.json({ line });
 
@@ -74,6 +66,16 @@ class BillController {
         await this._billService.removeById(bill._id);
 
         return res.sendStatus(204);
+    });
+
+    public deleteLineById: RequestHandler = wrapCatch(async (req, res) => {
+
+        const line = await this._resolveLineById(req.params, req.user);
+
+        await this._billService.removeLineById(req.params.billId, line._id);
+
+        return res.sendStatus(204);
+
     });
 
     public createBill: RequestHandler = wrapCatch(async (req, res) => {
@@ -144,6 +146,23 @@ class BillController {
             message: 'A bill with the given ID could not be found.',
             meta: { billId },
         });
+    }
+
+    private async _resolveLineById(
+        { billId, lineId }: { billId: string, lineId: string },
+        user: IUser
+    ): Promise<IBillLineItem> {
+
+        const { lines } = await this._resolveBillCreatedByUser(billId, user);
+
+        const [line] = lines.filter(({ _id }) => _id.toHexString() === lineId);
+
+        if (!line) {
+            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+        }
+
+        return line;
+
     }
 
 }

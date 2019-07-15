@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 import { getLineByIdRouter } from './get';
 import { validationController } from '@controllers';
+import { deleteLineByIdRouter } from './delete';
 
 const router = Router({ mergeParams: true });
 
@@ -13,7 +14,8 @@ router.use(
     '/:lineId',
     validators,
     validationController.ensureNoErrors,
-    getLineByIdRouter
+    getLineByIdRouter,
+    deleteLineByIdRouter
 );
 
 export { router as lineIdRouter };

@@ -2,12 +2,14 @@ import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@serv
 import { IBillBody, IBillBodyConfig, IBillLineItemConfig, IBillLineItem } from '@models';
 import { Types } from 'mongoose';
 import { ErrorCode } from '@constants/error_codes';
+import { types } from 'node-sass';
 
 export interface IBillService extends IDatabaseService<IBillBody, IBillBodyConfig> {
     getByCreatorId(userId: string): Promise<IBillBody[]>;
     getById(billId: string): Promise<IBillBody | void>;
     removeById(billId: string | Types.ObjectId): Promise<void>;
     insertLine(billId: string | Types.ObjectId, config: IBillLineItemConfig): Promise<IBillLineItem>;
+    removeLineById(billId: string | Types.ObjectId, lineId: string | Types.ObjectId): Promise<void>;
 }
 export type IBillServiceConfig = IDatabaseServiceConfig<IBillBody>;
 
@@ -47,6 +49,20 @@ export class BillService
         await bill.save();
 
         return line;
+
+    }
+
+    public async removeLineById(billId: string | Types.ObjectId, lineId: string | Types.ObjectId): Promise<void> {
+
+        const bill = await this.loadOneRaw({ _id: billId });
+
+        if (!bill) {
+            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+        }
+
+        (bill as any).lines.id(lineId).remove();
+
+        await bill.save();
 
     }
 
