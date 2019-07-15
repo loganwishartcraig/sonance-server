@@ -5,6 +5,7 @@ export interface IBillLineItem {
     readonly createdBy: Types.ObjectId;
     readonly createdOn: Date;
     readonly claimedBy: Types.ObjectId | void;
+    readonly claimedOn: Date | void;
     readonly deletedOn: Date | void;
     readonly isShared: boolean;
     readonly quantity: number;

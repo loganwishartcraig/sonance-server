@@ -6,6 +6,7 @@ import { PasswordHashService } from './Authentication/PasswordHash';
 import { PasswordSaltService } from './Authentication/PasswordSalt';
 import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '@models';
 import { BillService } from './Bill';
+import { globalErrorFactory } from '@common/ErrorFactory';
 
 require('dotenv').config();
 
@@ -30,9 +31,14 @@ const handleDatabaseError = (...args: any[]) => {
 // TODO: Allow connection consumers to reject promises if connection fails
 connection.on('error', handleDatabaseError);
 
-export const userService = new UserService({ connection, modelFactory: userModelFactory });
+const genericServiceConfig = {
+    connection,
+    errorFactory: globalErrorFactory,
+} as const;
+
+export const userService = new UserService({ ...genericServiceConfig, modelFactory: userModelFactory });
 export const authService = new AuthenticationService({
-    passwordHashService: new PasswordHashService({ connection, modelFactory: passwordHashModelFactory }),
-    passwordSaltService: new PasswordSaltService({ connection, modelFactory: passwordSaltModelFactory }),
+    passwordHashService: new PasswordHashService({ ...genericServiceConfig, modelFactory: passwordHashModelFactory }),
+    passwordSaltService: new PasswordSaltService({ ...genericServiceConfig, modelFactory: passwordSaltModelFactory }),
 });
-export const billService = new BillService({ connection, modelFactory: billBodyModelFactory });
+export const billService = new BillService({ ...genericServiceConfig, modelFactory: billBodyModelFactory });

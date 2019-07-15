@@ -1,10 +1,13 @@
 import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@services/Database';
-import { IBillBody, IBillBodyConfig } from '@models';
+import { IBillBody, IBillBodyConfig, IBillLineItemConfig, IBillLineItem } from '@models';
+import { Types } from 'mongoose';
+import { ErrorCode } from '@constants/error_codes';
 
 export interface IBillService extends IDatabaseService<IBillBody, IBillBodyConfig> {
     getByCreatorId(userId: string): Promise<IBillBody[]>;
     getById(billId: string): Promise<IBillBody | void>;
-    removeById(billId: string): Promise<void>;
+    removeById(billId: string | Types.ObjectId): Promise<void>;
+    insertLine(billId: string | Types.ObjectId, config: IBillLineItemConfig): Promise<IBillLineItem>;
 }
 export type IBillServiceConfig = IDatabaseServiceConfig<IBillBody>;
 
@@ -25,8 +28,26 @@ export class BillService
         return this.findOne({ _id: billId as any });
     }
 
-    public async removeById(billId: string): Promise<void> {
+    public async removeById(billId: string | Types.ObjectId): Promise<void> {
         return this.removeOne({ _id: billId as any });
+    }
+
+    public async insertLine(billId: string | Types.ObjectId, config: IBillLineItemConfig): Promise<IBillLineItem> {
+
+        const bill = await this.loadOneRaw({ _id: billId });
+
+        if (!bill) {
+            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+        }
+
+        (bill as any).lines.push(config);
+
+        const line = (bill as any).lines[(bill as any).lines.length - 1];
+
+        await bill.save();
+
+        return line;
+
     }
 
 }

@@ -1,9 +1,11 @@
 import { Connection, Document, Model, QueryFindOneAndUpdateOptions } from 'mongoose';
 import { ModelFactory } from '@models/types';
+import { ErrorFactoryBase } from '@common/ErrorFactory';
 
 export interface IDatabaseServiceConfig<T = any> {
     readonly connection: Connection;
     readonly modelFactory: ModelFactory<T>;
+    readonly errorFactory: ErrorFactoryBase;
 }
 
 // Separation of IRestrictedDatabaseService/IDatabaseService
@@ -25,6 +27,7 @@ export interface IDatabaseService<
     CreationInterface extends {} = any
     > extends IRestrictedDatabaseService<ModelType, CreationInterface> {
 
+    loadOneRaw: (query: any) => Promise<Document | null>;
     find: (query: TypeSafeSchemaValueMap<ModelType>) => Promise<ModelType[]>;
     exists: (query: TypeSafeSchemaValueMap<ModelType>) => Promise<boolean>;
 
@@ -49,6 +52,7 @@ export class DatabaseService<ModelType, CreationInterface> implements
     protected readonly _connection: Connection;
     protected readonly _ready: Promise<boolean>;
     protected readonly _modelFactory: ModelFactory;
+    protected readonly _errorFactory: ErrorFactoryBase;
     protected _model: Model<Document>;
 
     constructor(config: IDatabaseServiceConfig) {
@@ -126,6 +130,14 @@ export class DatabaseService<ModelType, CreationInterface> implements
         const records = await this.find(query);
 
         return !!records.length;
+
+    }
+
+    public async loadOneRaw(query: any): Promise<Document | null> {
+
+        await this._ready;
+
+        return this._model.findOne(query).exec();
 
     }
 
