@@ -10,7 +10,7 @@ export interface IGetBillLinesResponse {
 
 router.get(
     '/',
-    billController.getLinesForBill
+    billController.getAllLinesForBill
 );
 
 export { router as getAllLinesRouter };

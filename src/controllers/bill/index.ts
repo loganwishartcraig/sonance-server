@@ -39,13 +39,29 @@ class BillController {
 
     });
 
-    public getLinesForBill: RequestHandler = wrapCatch(async (req, res) => {
+    public getAllLinesForBill: RequestHandler = wrapCatch(async (req, res) => {
 
         const { params: { billId } } = req;
 
         const { lines } = await this._resolveBillCreatedByUser(billId, req.user);
 
         return res.status(200).json({ lines });
+
+    });
+
+    public getLineForBill: RequestHandler = wrapCatch(async (req, res) => {
+
+        const { params: { billId, lineId } } = req;
+
+        const { lines } = await this._resolveBillCreatedByUser(billId, req.user);
+
+        const [line] = lines.filter(({ _id }) => _id.toHexString() === lineId);
+
+        if (!line) {
+            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+        }
+
+        return res.json({ line });
 
     });
 
