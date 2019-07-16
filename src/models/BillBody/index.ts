@@ -26,7 +26,7 @@ export const billBodyModelFactory: ModelFactory<IBillBody> = connection =>
     connection.model<Document, Model<Document, IBillBody>>(ModelName.BILL_BODY, BillBodySchema);
 
 export class BillBody {
-    public static CreatedByUser(bill: IBillBody, user: IUser): boolean {
+    public static createdByUser(bill: IBillBody, user: IUser): boolean {
         return user && bill.createdBy.equals(user._id);
     }
 }

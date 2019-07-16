@@ -8,7 +8,7 @@ export interface IBillService extends IDatabaseService<IBillBody, IBillBodyConfi
     getByCreatorId(userId: string): Promise<IBillBody[]>;
     getById(billId: string): Promise<IBillBody | void>;
     removeById(billId: string | Types.ObjectId): Promise<void>;
-    insertLine(billId: string | Types.ObjectId, config: IBillLineItemConfig): Promise<IBillLineItem>;
+    insertLines(billId: string | Types.ObjectId, configs: IBillLineItemConfig[]): Promise<IBillLineItem[]>;
     removeLineById(billId: string | Types.ObjectId, lineId: string | Types.ObjectId): Promise<void>;
 }
 export type IBillServiceConfig = IDatabaseServiceConfig<IBillBody>;
@@ -34,7 +34,10 @@ export class BillService
         return this.removeOne({ _id: billId as any });
     }
 
-    public async insertLine(billId: string | Types.ObjectId, config: IBillLineItemConfig): Promise<IBillLineItem> {
+    public async insertLines(
+        billId: string | Types.ObjectId,
+        configs: IBillLineItemConfig[]
+    ): Promise<IBillLineItem[]> {
 
         const bill = await this.loadOneRaw({ _id: billId });
 
@@ -42,13 +45,17 @@ export class BillService
             throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
         }
 
-        (bill as any).lines.push(config);
+        console.warn('pushing!', { configs });
 
-        const line = (bill as any).lines[(bill as any).lines.length - 1];
+        const sliceStart = (bill as any).lines.length;
+
+        (bill as any).lines.push(...configs);
+
+        const lines = (bill as any).lines.slice(sliceStart);
 
         await bill.save();
 
-        return line;
+        return lines;
 
     }
 

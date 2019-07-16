@@ -3,6 +3,7 @@ import { check } from 'express-validator';
 import { getLineByIdRouter } from './get';
 import { validationController } from '@controllers';
 import { deleteLineByIdRouter } from './delete';
+import { splitLineRouter } from './split/post';
 
 const router = Router({ mergeParams: true });
 
@@ -15,7 +16,8 @@ router.use(
     validators,
     validationController.ensureNoErrors,
     getLineByIdRouter,
-    deleteLineByIdRouter
+    deleteLineByIdRouter,
+    splitLineRouter
 );
 
 export { router as lineIdRouter };

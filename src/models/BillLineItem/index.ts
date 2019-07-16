@@ -13,3 +13,24 @@ export interface IBillLineItem {
 }
 
 export type IBillLineItemConfig = Omit<IBillLineItem, '_id' | 'createdOn'>;
+
+export class BillLineItem {
+
+    public static toConfig({ _id, ...lineConfig }: IBillLineItem): IBillLineItemConfig {
+        return lineConfig;
+    }
+
+    public static split(line: IBillLineItem, ways: number): IBillLineItemConfig[] {
+
+        const price = line.price / ways;
+        const splitLines: IBillLineItemConfig[] = [];
+
+        for (let i = 0; i < ways; i++) {
+            splitLines.push(this.toConfig({ ...line, price }));
+        }
+
+        return splitLines;
+
+    }
+
+}

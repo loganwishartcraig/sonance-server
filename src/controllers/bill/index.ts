@@ -2,7 +2,7 @@ import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
 import { GenericError } from '@common/GenericError';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
-import { BillBody, IBillBody, IBillBodyConfig, IBillLineItem, IBillLineItemConfig, IUser } from '@models';
+import { BillBody, IBillBody, IBillBodyConfig, IBillLineItem, IBillLineItemConfig, IUser, BillLineItem } from '@models';
 import { INewBillBodyRequest, INewBillLineItemRequest } from '@routes/api';
 import { billService, IBillService } from '@services';
 import { RequestHandler } from 'express';
@@ -94,9 +94,29 @@ class BillController {
         const bill = await this._resolveBillCreatedByUser(billId, req.user);
         const lineConfig = this._serializeLineConfig(req.body.line, req.user);
 
-        const line = await this._billService.insertLine(bill._id, lineConfig);
+        const [line] = await this._billService.insertLines(bill._id, [lineConfig]);
 
         return res.json({ line });
+
+    });
+
+    public splitLines: RequestHandler = wrapCatch(async (req, res) => {
+
+        const { body: { ways }, params: { billId, lineId } } = req;
+
+        const bill = await this._resolveBillCreatedByUser(billId, req.user);
+        const [line] = (bill as any).lines.filter(({ _id }: IBillLineItem) => _id.toHexString() === lineId);
+
+        if (!line) {
+            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+        }
+
+        const splitLines = await BillLineItem.split(line, ways);
+
+        await this._billService.removeLineById(billId, line._id);
+        const lines = await this._billService.insertLines(billId, splitLines);
+
+        return res.json({ lines });
 
     });
 
@@ -133,7 +153,7 @@ class BillController {
 
         if (!bill) {
             throw this._buildNotFoundError(billId);
-        } else if (!BillBody.CreatedByUser(bill, user)) {
+        } else if (!BillBody.createdByUser(bill, user)) {
             throw this._errorFactory.build(ErrorCode.NOT_AUTHORIZED);
         }
 
