@@ -14,7 +14,7 @@ export interface IBillParticipantService {
  *   - Incorporate sub-document methods into parent document service class
  *          Pros: easy to do, less complexity, no duplication of bill logic.
  *          Cons: violates SRP in my opinion, can lead to monolith classes.
- *   - Pass loaded Documents via params/constructor
+ *   - Pass loaded Documents via params
  *          Pros: Decouples the services completely (directly), uses the Document class as a common interface.
  *                Lean classes, and is highly scalable.
  *          Cons: Forces caller to load raw Document classes thus expanding the boundary of the Document class
@@ -35,11 +35,20 @@ export interface IBillParticipantService {
                   altered. Easy to implement.
             Cons: Still a level of coupling between the two classes. Restricted to only using
                   public parent class methods, again expanding the boundary because we need the Document class.
+                  Methods will need to accept parent IDs so they can interact with the contained parent service
             Justification: The class will, no matter what, depend on the Document class. We can define an extended
                   parent class interface that the service will depend on, isolating the rest of the application from
                   the Document class. This allows changing the implementation of the bill service class & the super
                   class (but we would still need to worry about the Document class.)
- */
+    - Wrap the parent document in a container class that provides an interface to interact with the sub documents
+            Pros: Allows no dependency on the parent document service class. Removes any need
+                  to provide extra parent data for method calls.
+            Cons: Requires wrapping the loaded document each time using this class. Expands the bondary of the
+                  Document class, as each constructor call depends on a loaded Document.
+            Mitigation: Could create a factory to isolate consumer from details. Factory
+                        could have parent service injected and be responsible for the
+                        creation of the class.
+*/
 
 // How to structure model services for sub-documents in mongoose.
 //  - Extend the parent document service class

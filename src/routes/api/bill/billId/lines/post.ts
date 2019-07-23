@@ -1,18 +1,13 @@
-import { validationController, billController } from '@controllers';
+import { billController, validationController } from '@controllers';
 import { IBillLineItem } from '@models';
-import { Request, Router } from 'express';
-import { Response } from 'express-serve-static-core';
+import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
+import { INewLineItemRequest } from '@services/BillLineItem';
 
 const router = Router({ mergeParams: true });
 
-export interface INewBillLineItemRequest {
-    line: {
-        quantity: number;
-        price: number;
-        isClaimed?: boolean;
-        isShared?: boolean;
-    };
+export interface ICreateBillLineItemRequest {
+    line: INewLineItemRequest;
 }
 
 export interface INewBillLineItemResponse {
@@ -66,3 +61,4 @@ router.post(
 );
 
 export { router as createLineRouter };
+
