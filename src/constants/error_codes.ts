@@ -1,4 +1,4 @@
-export enum ErrorCode {
+export const enum ErrorCode {
 
     // Authentication
     AUTHENTICATION_FAILED = 'AUTHENTICATION_FAILED',
@@ -10,6 +10,7 @@ export enum ErrorCode {
     // Database
     RECORD_NOT_FOUND = 'RECORD_NOT_FOUND',
     RECORD_ALREADY_EXISTS = 'RECORD_ALREADY_EXISTS',
+    REQUEST_REJECTED = 'REQUEST_REJECTED',
 
     // Misc.
     UNKNOWN_ERROR = 'UNKNOWN_ERROR',

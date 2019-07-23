@@ -11,6 +11,7 @@ const billBodySchema = new Schema<IBillBody>({
     deletedOn: { type: Date },
     tax: { type: Number, required: true, validate: schemaValidators.gtez('Tax cannot be negative') },
     tip: { type: Number, required: true, validate: schemaValidators.gtez('Tip cannot be negative.') },
+    shareCode: { type: String, required: true },
     lines: [billLineItemSchema],
     participants: [billParticipantSchema],
 });

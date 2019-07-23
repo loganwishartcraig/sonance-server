@@ -14,6 +14,8 @@ export interface IBillLineItem {
 
 export type IBillLineItemConfig = Omit<IBillLineItem, '_id' | 'createdOn'>;
 
+export type IBIllLineItemUpdateConfig = Partial<Omit<IBillLineItem, '_id'>>;
+
 export class BillLineItem {
 
     public static toConfig({ _id, ...lineConfig }: IBillLineItem): IBillLineItemConfig {

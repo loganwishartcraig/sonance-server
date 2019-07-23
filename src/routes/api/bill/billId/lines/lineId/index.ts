@@ -4,6 +4,8 @@ import { getLineByIdRouter } from './get';
 import { validationController } from '@controllers';
 import { deleteLineByIdRouter } from './delete';
 import { splitLineRouter } from './split/post';
+import { claimLineRouter } from './claim/post';
+import { releaseLineRouter } from './release/post';
 
 const router = Router({ mergeParams: true });
 
@@ -17,7 +19,9 @@ router.use(
     validationController.ensureNoErrors,
     getLineByIdRouter,
     deleteLineByIdRouter,
-    splitLineRouter
+    splitLineRouter,
+    claimLineRouter,
+    releaseLineRouter
 );
 
 export { router as lineIdRouter };

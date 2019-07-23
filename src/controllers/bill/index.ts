@@ -2,21 +2,33 @@ import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
 import { GenericError } from '@common/GenericError';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
-import { BillBody, IBillBody, IBillBodyConfig, IBillLineItem, IBillLineItemConfig, IUser, BillLineItem } from '@models';
+import {
+    BillBody,
+    BillLineItem,
+    IBillBody,
+    IBillBodyConfig,
+    IBillLineItem,
+    IBillLineItemConfig,
+    IBIllLineItemUpdateConfig,
+    IUser
+} from '@models';
 import { INewBillBodyRequest, INewBillLineItemRequest } from '@routes/api';
-import { billService, IBillService } from '@services';
+import { billService, IBillService, IBillParticipantService, billParticipantService } from '@services';
 import { RequestHandler } from 'express';
 
 class BillController {
 
     private _billService: IBillService;
+    private _participantService: IBillParticipantService;
     private _errorFactory: ErrorFactoryBase;
 
     constructor(
         billService: IBillService,
+        participantService: IBillParticipantService,
         errorFactory: ErrorFactoryBase
     ) {
         this._billService = billService;
+        this._participantService = participantService;
         this._errorFactory = errorFactory;
     }
 
@@ -104,19 +116,68 @@ class BillController {
 
         const { body: { ways }, params: { billId, lineId } } = req;
 
-        const bill = await this._resolveBillCreatedByUser(billId, req.user);
-        const [line] = (bill as any).lines.filter(({ _id }: IBillLineItem) => _id.toHexString() === lineId);
-
-        if (!line) {
-            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
-        }
-
+        const line = await this._resolveLineById({ billId, lineId }, req.user);
         const splitLines = await BillLineItem.split(line, ways);
 
         await this._billService.removeLineById(billId, line._id);
         const lines = await this._billService.insertLines(billId, splitLines);
 
         return res.json({ lines });
+
+    });
+
+    public claimLine: RequestHandler = wrapCatch(async (req, res) => {
+
+        const line = await this._resolveLineById(req.params, req.user);
+
+        if (line.claimedBy) {
+            throw this._errorFactory.build(ErrorCode.REQUEST_REJECTED, {
+                message: 'The line has already been claimed.',
+            });
+        }
+
+        const updates: IBIllLineItemUpdateConfig = {
+            claimedBy: req.user._id.toHexString(),
+            claimedOn: new Date(),
+        };
+
+        await this._billService.updateLine(req.params.billId, line._id, updates);
+
+        return res.json({ updates });
+
+    });
+
+    public releaseLine: RequestHandler = wrapCatch(async (req, res) => {
+
+        const line = await this._resolveLineById(req.params, req.user);
+
+        const updates: IBIllLineItemUpdateConfig = {
+            claimedBy: undefined,
+            claimedOn: undefined,
+        };
+
+        await this._billService.updateLine(req.params.billId, line._id, updates);
+
+        return res.json({ updates });
+
+    });
+
+    public joinUserToBill: RequestHandler = wrapCatch(async (req, res) => {
+
+        const { body: { shareCode }, user } = req;
+
+        // const bill = await this._billService.loadOneRaw({ shareCode });
+
+        // if (!bill) {
+        //     throw this._errorFactory.build(ErrorCode.INVALID_CREDENTIALS, {
+        //         message: 'No bill with a matching share code could be found.',
+        //         meta: { shareCode },
+        //     });
+        // }
+
+        const participant = await this._participantService.addUserViaCode(shareCode, user);
+
+        return res.json({ participant });
 
     });
 
@@ -127,10 +188,13 @@ class BillController {
         } }: INewBillBodyRequest,
         user: IUser
     ): IBillBodyConfig {
+
+        // TODO: implement share codes correctly.
         return {
-            participants: [],
             ...billConfig,
+            shareCode: 'XXXXXX',
             lines: lines.map(line => this._serializeLineConfig(line, user)),
+            participants: [this._participantService.resolveConfigForUser(user)],
             createdBy: user._id,
         };
     }
@@ -152,7 +216,7 @@ class BillController {
         const bill = await this._billService.getById(billId);
 
         if (!bill) {
-            throw this._buildNotFoundError(billId);
+            throw this._buildBillNotFoundError(billId);
         } else if (!BillBody.createdByUser(bill, user)) {
             throw this._errorFactory.build(ErrorCode.NOT_AUTHORIZED);
         }
@@ -161,10 +225,17 @@ class BillController {
 
     }
 
-    private _buildNotFoundError(billId: string): GenericError {
+    private _buildBillNotFoundError(billId: string): GenericError {
         return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
-            message: 'A bill with the given ID could not be found.',
+            message: 'The requested bill could not be found.',
             meta: { billId },
+        });
+    }
+
+    private _buildLineNotFoundError(billId: string, lineId: string): GenericError {
+        return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
+            message: 'The requested line could not be found.',
+            meta: { billId, lineId },
         });
     }
 
@@ -175,10 +246,10 @@ class BillController {
 
         const { lines } = await this._resolveBillCreatedByUser(billId, user);
 
-        const [line] = lines.filter(({ _id }) => _id.toHexString() === lineId);
+        const [line] = lines.filter(({ _id }) => _id.equals(lineId));
 
         if (!line) {
-            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+            throw this._buildLineNotFoundError(billId, lineId);
         }
 
         return line;
@@ -189,5 +260,6 @@ class BillController {
 
 export const billController = new BillController(
     billService,
+    billParticipantService,
     globalErrorFactory
 );

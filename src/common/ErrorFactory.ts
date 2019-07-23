@@ -19,6 +19,7 @@ export class ErrorFactory extends ErrorFactoryBase {
             [ErrorCode.RECORD_ALREADY_EXISTS]: 'A record matching the given configuration already exists.',
             [ErrorCode.UNKNOWN_ERROR]: 'An unknown error ocurred.',
             [ErrorCode.INVALID_PAYLOAD]: 'The payload provided is invalid.',
+            [ErrorCode.REQUEST_REJECTED]: 'The request was rejected.',
         };
 
     private static _defaultHttpStatus: {
@@ -33,6 +34,7 @@ export class ErrorFactory extends ErrorFactoryBase {
             [ErrorCode.RECORD_ALREADY_EXISTS]: 422,
             [ErrorCode.UNKNOWN_ERROR]: 500,
             [ErrorCode.INVALID_PAYLOAD]: 422,
+            [ErrorCode.REQUEST_REJECTED]: 422,
         };
 
     public build(code: ErrorCode, overrides: Partial<Omit<IGenericError, 'code'>> = {}): GenericError {

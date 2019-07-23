@@ -16,10 +16,10 @@ export interface IRestrictedDatabaseService<
     ModelType extends {} = any,
     CreationInterface extends {} = any
     > {
-    findOne: (query: TypeSafeSchemaValueMap<ModelType>) => Promise<ModelType | void>;
+    findOne: (query: SchemaValueMap<ModelType>) => Promise<ModelType | void>;
     insert: (payload: CreationInterface) => Promise<ModelType>;
-    upsert: (query: TypeSafeSchemaValueMap<ModelType>, payload: CreationInterface) => Promise<ModelType>;
-    removeOne: (query: TypeSafeSchemaValueMap<ModelType>) => Promise<void>;
+    upsert: (query: SchemaValueMap<ModelType>, payload: CreationInterface) => Promise<ModelType>;
+    removeOne: (query: SchemaValueMap<ModelType>) => Promise<void>;
 }
 
 export interface IDatabaseService<
@@ -27,18 +27,19 @@ export interface IDatabaseService<
     CreationInterface extends {} = any
     > extends IRestrictedDatabaseService<ModelType, CreationInterface> {
 
-    loadOneRaw: (query: any) => Promise<Document | null>;
-    find: (query: TypeSafeSchemaValueMap<ModelType>) => Promise<ModelType[]>;
-    exists: (query: TypeSafeSchemaValueMap<ModelType>) => Promise<boolean>;
+    find: (query: SchemaValueMap<ModelType>) => Promise<ModelType[]>;
+    exists: (query: SchemaValueMap<ModelType>) => Promise<boolean>;
+    updateOne: (query: SchemaValueMap<ModelType>, updates: Partial<ModelType>) => Promise<ModelType | void>;
+    update: (query: SchemaValueMap<ModelType>, updates: Partial<ModelType>) => Promise<ModelType[]>;
 
+}
+
+export interface IDatabaseServiceRaw<ModelType extends {} = any> {
+    loadOneRaw: (query: any) => Promise<Document | null>;
 }
 
 export type SchemaValueMap<ModelSchema> = {
     [key in keyof ModelSchema]?: any;
-};
-
-export type TypeSafeSchemaValueMap<ModelSchema> = {
-    [key in keyof ModelSchema]?: ModelSchema[key];
 };
 
 // DatabaseService implements both IDatabaseService/IRestrictedDatabaseService
@@ -46,6 +47,7 @@ export type TypeSafeSchemaValueMap<ModelSchema> = {
 // still just leverage the IRestrictedDatabaseService interface.
 export class DatabaseService<ModelType, CreationInterface> implements
     IDatabaseService<ModelType, CreationInterface>,
+    IDatabaseServiceRaw,
     IRestrictedDatabaseService<ModelType, CreationInterface>
 {
 
@@ -59,10 +61,11 @@ export class DatabaseService<ModelType, CreationInterface> implements
         this._connection = config.connection;
         this._modelFactory = config.modelFactory;
         this._ready = this._initModel();
+        this._errorFactory = config.errorFactory;
         this._connection.on('error', this._handleConnectionError);
     }
 
-    public async find(query: TypeSafeSchemaValueMap<ModelType>): Promise<ModelType[]> {
+    public async find(query: SchemaValueMap<ModelType>): Promise<ModelType[]> {
 
         await this._ready;
 
@@ -72,7 +75,7 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
     }
 
-    public async findOne(query: TypeSafeSchemaValueMap<ModelType>): Promise<ModelType | void> {
+    public async findOne(query: SchemaValueMap<ModelType>): Promise<ModelType | void> {
 
         await this._ready;
 
@@ -98,7 +101,7 @@ export class DatabaseService<ModelType, CreationInterface> implements
     }
 
     public async upsert<PayloadShape extends Object>(
-        query: TypeSafeSchemaValueMap<ModelType>,
+        query: SchemaValueMap<ModelType>,
         payload: PayloadShape
     ): Promise<ModelType> {
 
@@ -118,12 +121,12 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
     }
 
-    public async removeOne(query: TypeSafeSchemaValueMap<ModelType>): Promise<void> {
+    public async removeOne(query: SchemaValueMap<ModelType>): Promise<void> {
         await this._ready;
         await this._model.findOneAndRemove(query).exec();
     }
 
-    public async exists(query: TypeSafeSchemaValueMap<ModelType>): Promise<boolean> {
+    public async exists(query: SchemaValueMap<ModelType>): Promise<boolean> {
 
         await this._ready;
 
@@ -138,6 +141,31 @@ export class DatabaseService<ModelType, CreationInterface> implements
         await this._ready;
 
         return this._model.findOne(query).exec();
+
+    }
+
+    public async update(query: SchemaValueMap<ModelType>, updates: Partial<ModelType>): Promise<ModelType[]> {
+
+        await this._ready;
+
+        await this._model.updateMany(query, updates).exec();
+
+        return await this.find(query);
+
+    }
+
+    public async updateOne(
+        query: SchemaValueMap<ModelType>,
+        updates: Partial<ModelType>
+    ): Promise<ModelType | void> {
+
+        await this._ready;
+
+        const updated = await this._model.findOneAndUpdate(query, updates).exec();
+
+        if (updated) {
+            updated.toObject();
+        }
 
     }
 

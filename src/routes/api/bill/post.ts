@@ -9,7 +9,6 @@ export interface INewBillBodyRequest {
         tax: number;
         tip: number;
         lines?: any[];
-        participants?: any[];
     };
 }
 
