@@ -1,185 +1,213 @@
 import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
 import { GenericError } from '@common/GenericError';
+import { IResponseLocals } from '@common/types';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
-import {
-    BillBody,
-    BillLineItem,
-    IBillBody,
-    IBillBodyConfig,
-    IBillLineItem,
-    IBillLineItemConfig,
-    IBIllLineItemUpdateConfig,
-    IUser
-} from '@models';
+import { IBillBodyConfig, IBillLineItemConfig, IUser } from '@models';
 import { INewBillBodyRequest, INewBillLineItemRequest } from '@routes/api';
-import { billService, IBillService, IBillParticipantService, billParticipantService } from '@services';
+import {
+    billParticipantService,
+    billService,
+    IBillParticipantService,
+    IBillService,
+    billLineItemService
+} from '@services';
+import { IBillLineItemService } from '@services/BillLineItem';
 import { RequestHandler } from 'express';
+import { Request, Response } from 'express-serve-static-core';
+
+export interface IBillControllerConfig {
+    billService: IBillService;
+    participantService: IBillParticipantService;
+    billLineItemService: IBillLineItemService;
+    errorFactory: ErrorFactoryBase;
+}
 
 class BillController {
 
     private _billService: IBillService;
-    private _participantService: IBillParticipantService;
+    private _billParticipantService: IBillParticipantService;
+    private _billLineItemService: IBillLineItemService;
     private _errorFactory: ErrorFactoryBase;
 
-    constructor(
-        billService: IBillService,
-        participantService: IBillParticipantService,
-        errorFactory: ErrorFactoryBase
-    ) {
-        this._billService = billService;
-        this._participantService = participantService;
-        this._errorFactory = errorFactory;
+    constructor(config: IBillControllerConfig) {
+        this._billService = config.billService;
+        this._billParticipantService = config.participantService;
+        this._billLineItemService = config.billLineItemService;
+        this._errorFactory = config.errorFactory;
     }
 
-    public getAllForUser: RequestHandler = wrapCatch(async (req, res) => {
+    public loadBillById = (
+        idAccessor: (req: Request) => string = ({ params: { billId } }) => billId
+    ): RequestHandler => wrapCatch(async (req, res, next) => {
 
-        const { query: { userId } } = req;
-        const bills = await this._billService.getByCreatorId(userId);
+        const billId = idAccessor(req);
+        const bill = await this._billService.loadOneRaw({ _id: billId });
 
-        return res.json({ bills });
-
-    });
-
-    public getByIdForUser: RequestHandler = wrapCatch(async (req, res) => {
-
-        const { params: { billId } } = req;
-
-        const bill = await this._resolveBillCreatedByUser(billId, req.user);
-
-        return res.status(200).json({ bill });
-
-    });
-
-    public getAllLinesForBill: RequestHandler = wrapCatch(async (req, res) => {
-
-        const { params: { billId } } = req;
-
-        const { lines } = await this._resolveBillCreatedByUser(billId, req.user);
-
-        return res.status(200).json({ lines });
-
-    });
-
-    public getLineForBill: RequestHandler = wrapCatch(async (req, res) => {
-
-        const line = await this._resolveLineById(req.params, req.user);
-
-        return res.json({ line });
-
-    });
-
-    public deleteByIdForUser: RequestHandler = wrapCatch(async (req, res) => {
-
-        const { params: { billId } } = req;
-
-        const bill = await this._resolveBillCreatedByUser(billId, req.user);
-
-        await this._billService.removeById(bill._id);
-
-        return res.sendStatus(204);
-    });
-
-    public deleteLineById: RequestHandler = wrapCatch(async (req, res) => {
-
-        const line = await this._resolveLineById(req.params, req.user);
-
-        await this._billService.removeLineById(req.params.billId, line._id);
-
-        return res.sendStatus(204);
-
-    });
-
-    public createBill: RequestHandler = wrapCatch(async (req, res) => {
-
-        const billConfig = this._serializeBillConfig(req.body, req.user);
-        const bill = await this._billService.insert(billConfig);
-
-        return res.status(201).json({ bill });
-
-    });
-
-    public createLineForBill: RequestHandler = wrapCatch(async (req, res) => {
-
-        const { params: { billId } } = req;
-
-        const bill = await this._resolveBillCreatedByUser(billId, req.user);
-        const lineConfig = this._serializeLineConfig(req.body.line, req.user);
-
-        const [line] = await this._billService.insertLines(bill._id, [lineConfig]);
-
-        return res.json({ line });
-
-    });
-
-    public splitLines: RequestHandler = wrapCatch(async (req, res) => {
-
-        const { body: { ways }, params: { billId, lineId } } = req;
-
-        const line = await this._resolveLineById({ billId, lineId }, req.user);
-        const splitLines = await BillLineItem.split(line, ways);
-
-        await this._billService.removeLineById(billId, line._id);
-        const lines = await this._billService.insertLines(billId, splitLines);
-
-        return res.json({ lines });
-
-    });
-
-    public claimLine: RequestHandler = wrapCatch(async (req, res) => {
-
-        const line = await this._resolveLineById(req.params, req.user);
-
-        if (line.claimedBy) {
-            throw this._errorFactory.build(ErrorCode.REQUEST_REJECTED, {
-                message: 'The line has already been claimed.',
-            });
+        if (!bill) {
+            throw this._buildBillNotFoundError(billId);
         }
 
-        const updates: IBIllLineItemUpdateConfig = {
-            claimedBy: req.user._id.toHexString(),
-            claimedOn: new Date(),
-        };
+        res.locals.bill = bill;
 
-        await this._billService.updateLine(req.params.billId, line._id, updates);
+        next();
 
-        return res.json({ updates });
+    })
+
+    public loadBillsForUser = (
+        idAccessor: (req: Request) => string = ({ query: { userId } }) => userId
+    ): RequestHandler => wrapCatch(async (req, res, next) => {
+
+        const userId = idAccessor(req);
+
+        (res.locals as IResponseLocals).bills = await this._billService.getByCreatorId(userId);
+
+        next();
+
+    })
+
+    public saveBill: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const bill = this._extractLocalValue(res, 'bill');
+
+        await this._billService.save(bill);
+
+        next();
+
+    });
+
+    public loadAllLines: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const bill = this._extractLocalValue(res, 'bill');
+
+        (res.locals as IResponseLocals).lines = await this._billLineItemService.getAll(bill);
+
+        next();
 
     });
 
-    public releaseLine: RequestHandler = wrapCatch(async (req, res) => {
+    public loadLineById = (
+        idAccessor: (req: Request) => string = ({ params: { lineId } }) => lineId
+    ): RequestHandler => wrapCatch(async (req, res, next) => {
 
-        const line = await this._resolveLineById(req.params, req.user);
+        const lineId = idAccessor(req);
+        const bill = this._extractLocalValue(res, 'bill');
 
-        const updates: IBIllLineItemUpdateConfig = {
-            claimedBy: undefined,
-            claimedOn: undefined,
-        };
+        const line = await this._billLineItemService.getById(bill, lineId);
 
-        await this._billService.updateLine(req.params.billId, line._id, updates);
+        if (!line) {
+            throw this._buildLineItemNotFoundError(bill._id, lineId);
+        }
 
-        return res.json({ updates });
+        (res.locals as IResponseLocals).line = line;
+
+        next();
+
+    })
+
+    public deleteBillById = (
+        idAccessor: (req: Request) => string = ({ params: { billId } }) => billId
+    ): RequestHandler => wrapCatch(async (req, res, next) => {
+
+        const billId = idAccessor(req);
+
+        await this._billService.removeById(billId);
+
+        next();
+
+    })
+
+    public deleteLineById = (
+        idAccessor: (req: Request) => string = ({ params: { lineId } }) => lineId
+    ): RequestHandler => wrapCatch(async (req, res, next) => {
+
+        const { locals: { bill } } = res;
+        const lineId = idAccessor(req);
+
+        await this._billLineItemService.deleteById(bill, lineId);
+
+        next();
+
+    })
+
+    public createBill: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const billConfig = this._serializeBillConfig(req.body, req.user);
+
+        (res.locals as IResponseLocals).bill = await this._billService.insert(billConfig);
+
+        next();
 
     });
 
-    public joinUserToBill: RequestHandler = wrapCatch(async (req, res) => {
+    public createLine: RequestHandler = wrapCatch(async (req, res, next) => {
 
-        const { body: { shareCode }, user } = req;
+        const bill = this._extractLocalValue(res, 'bill');
 
-        // const bill = await this._billService.loadOneRaw({ shareCode });
+        const lineConfig = this._serializeLineConfig(req.body.line, req.user);
 
-        // if (!bill) {
-        //     throw this._errorFactory.build(ErrorCode.INVALID_CREDENTIALS, {
-        //         message: 'No bill with a matching share code could be found.',
-        //         meta: { shareCode },
-        //     });
-        // }
+        const [line] = await this._billLineItemService.create(bill._id, [lineConfig]);
 
-        const participant = await this._participantService.addUserViaCode(shareCode, user);
+        (res.locals as IResponseLocals).line = line;
 
-        return res.json({ participant });
+        next();
 
     });
+
+    public splitLine: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const { body: { ways }, params: { lineId } } = req;
+        const bill = this._extractLocalValue(res, 'bill');
+
+        (res.locals as IResponseLocals).lines = await this._billLineItemService.split(bill, lineId, ways);
+
+        next();
+
+    });
+
+    public claimLine: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const { params: { lineId }, user } = req;
+        const bill = this._extractLocalValue(res, 'bill');
+
+        (res.locals as IResponseLocals).line = await this._billLineItemService.claim(bill, lineId, user);
+
+        next();
+
+    });
+
+    public releaseLine: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const { params: { lineId } } = req;
+        const bill = this._extractLocalValue(res, 'bill');
+
+        (res.locals as IResponseLocals).lineUpdates = await this._billLineItemService.release(bill, lineId);
+
+        next();
+
+    });
+
+    public joinUserToBill: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const { user } = req;
+        const bill = this._extractLocalValue(res, 'bill');
+
+        (res.locals as IResponseLocals).participant = await this._billParticipantService.create(bill, user);
+        next();
+
+    });
+
+    private _extractLocalValue<T extends keyof IResponseLocals>(res: Response, key: T): Required<IResponseLocals>[T] {
+
+        const value = res.locals[key];
+
+        if (value == null) {
+            throw this._buildLocalNotProvidedError(key);
+        }
+
+        return value;
+
+    }
 
     private _serializeBillConfig(
         { bill: {
@@ -190,16 +218,19 @@ class BillController {
     ): IBillBodyConfig {
 
         // TODO: implement share codes correctly.
+        // TODO: Extract serialization to validation layer
+
         return {
             ...billConfig,
             shareCode: 'XXXXXX',
             lines: lines.map(line => this._serializeLineConfig(line, user)),
-            participants: [this._participantService.resolveConfigForUser(user)],
+            participants: [],
             createdBy: user._id,
         };
     }
 
     private _serializeLineConfig(config: INewBillLineItemRequest['line'], user: IUser): IBillLineItemConfig {
+        // TODO: Extract serialization to validation layer
         return {
             createdBy: user._id,
             claimedBy: config.isClaimed ? user._id : undefined,
@@ -211,20 +242,6 @@ class BillController {
         };
     }
 
-    private async _resolveBillCreatedByUser(billId: string, user: IUser): Promise<IBillBody> {
-
-        const bill = await this._billService.getById(billId);
-
-        if (!bill) {
-            throw this._buildBillNotFoundError(billId);
-        } else if (!BillBody.createdByUser(bill, user)) {
-            throw this._errorFactory.build(ErrorCode.NOT_AUTHORIZED);
-        }
-
-        return bill;
-
-    }
-
     private _buildBillNotFoundError(billId: string): GenericError {
         return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
             message: 'The requested bill could not be found.',
@@ -232,34 +249,50 @@ class BillController {
         });
     }
 
-    private _buildLineNotFoundError(billId: string, lineId: string): GenericError {
+    private _buildLocalNotProvidedError(key: keyof IResponseLocals, meta: any = {}): GenericError {
+
+        const recType = this._resolveLocalPropRecTypeString(key);
+
+        return this._errorFactory.build(ErrorCode.INTERNAL_ERROR, {
+            meta,
+            message: `The ${recType} was not properly loaded on the server.`,
+        });
+
+    }
+
+    private _resolveLocalPropRecTypeString(key: keyof IResponseLocals): string {
+
+        switch (key) {
+            case 'bill':
+            case 'bills':
+            case 'billUpdates':
+                return 'bill';
+            case 'line':
+            case 'lines':
+            case 'lineUpdates':
+                return 'line';
+            case 'participant':
+            case 'participants':
+            case 'participantUpdates':
+                return 'participant';
+            default:
+                return 'record';
+        }
+
+    }
+
+    private _buildLineItemNotFoundError(billId: string, lineId: string): GenericError {
         return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
-            message: 'The requested line could not be found.',
+            message: 'The requested line item could not be found.',
             meta: { billId, lineId },
         });
     }
 
-    private async _resolveLineById(
-        { billId, lineId }: { billId: string, lineId: string },
-        user: IUser
-    ): Promise<IBillLineItem> {
-
-        const { lines } = await this._resolveBillCreatedByUser(billId, user);
-
-        const [line] = lines.filter(({ _id }) => _id.equals(lineId));
-
-        if (!line) {
-            throw this._buildLineNotFoundError(billId, lineId);
-        }
-
-        return line;
-
-    }
-
 }
 
-export const billController = new BillController(
+export const billController = new BillController({
     billService,
-    billParticipantService,
-    globalErrorFactory
-);
+    billLineItemService,
+    errorFactory: globalErrorFactory,
+    participantService: billParticipantService,
+});

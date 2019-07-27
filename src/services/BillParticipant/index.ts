@@ -1,12 +1,10 @@
 import { ErrorCode } from '@constants/error_codes';
 import { IBillParticipant, IBillParticipantConfig, IUser, IBillBody } from '@models';
-import { IDatabaseServiceRaw } from '@services/Database';
 import { Document, Types } from 'mongoose';
 import { ErrorFactoryBase } from '@common/ErrorFactory';
 
 export interface IBillParticipantService {
-    addUserViaCode(shareCode: string, user: IUser): Promise<IBillParticipant>;
-    resolveConfigForUser(user: IUser): IBillParticipantConfig;
+    create(bill: Document, user: IUser): Promise<IBillParticipant>;
 }
 
 /**
@@ -48,6 +46,7 @@ export interface IBillParticipantService {
             Mitigation: Could create a factory to isolate consumer from details. Factory
                         could have parent service injected and be responsible for the
                         creation of the class.
+    - Use middleware!
 */
 
 // How to structure model services for sub-documents in mongoose.
@@ -57,31 +56,19 @@ export interface IBillParticipantService {
 //  -
 
 export interface IBillParticipantServiceConfig {
-    billService: IDatabaseServiceRaw<IBillBody>;
     errorFactory: ErrorFactoryBase;
 }
 
 export default class BillParticipantService
     implements IBillParticipantService {
 
-    private readonly _billService: IDatabaseServiceRaw<IBillBody>;
     private readonly _errorFactory: ErrorFactoryBase;
 
     constructor(config: IBillParticipantServiceConfig) {
-        this._billService = config.billService;
         this._errorFactory = config.errorFactory;
     }
 
-    public async addUserViaCode(shareCode: string, user: IUser): Promise<IBillParticipant> {
-
-        const bill = await this._billService.loadOneRaw({ shareCode });
-
-        if (!bill) {
-            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
-                message: 'No bill was found matching the given share code.',
-                meta: { shareCode },
-            });
-        }
+    public async create(bill: Document, user: IUser): Promise<IBillParticipant> {
 
         const existingParticipant = this._findParticipant(bill, user._id);
 
@@ -99,10 +86,6 @@ export default class BillParticipantService
 
         return participant;
 
-    }
-
-    public resolveConfigForUser(user: IUser): IBillParticipantConfig {
-        return this._resolveParticipantConfig(user);
     }
 
     private _findParticipant(

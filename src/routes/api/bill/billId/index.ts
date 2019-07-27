@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { getBillRouter } from './get';
 import { deleteBillRoute } from './delete';
 import { check } from 'express-validator';
-import { validationController } from '@controllers';
+import { validationController, billController } from '@controllers';
 import { lineRouter } from './lines';
 
 const router = Router();
@@ -20,6 +20,7 @@ router.use(
     '/:billId',
     validation,
     validationController.ensureNoErrors,
+    billController.loadBillById,
     routes,
     lineRouter
 );

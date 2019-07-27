@@ -32,4 +32,7 @@ export class BillBody {
     public static createdByUser(bill: IBillBody, user: IUser): boolean {
         return user && bill.createdBy.equals(user._id);
     }
+    public static userIsParticipant(bill: IBillBody, user: IUser): boolean {
+        return user && !!bill.participants.filter(({ participant }) => participant.equals(user._id)).length;
+    }
 }

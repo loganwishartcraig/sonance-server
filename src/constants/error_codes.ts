@@ -15,4 +15,6 @@ export const enum ErrorCode {
     // Misc.
     UNKNOWN_ERROR = 'UNKNOWN_ERROR',
     INVALID_PAYLOAD = 'INVALID_PAYLOAD',
+    INTERNAL_ERROR = 'INTERNAL_ERROR',
+
 }

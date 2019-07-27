@@ -32,10 +32,9 @@ export interface IDatabaseService<
     updateOne: (query: SchemaValueMap<ModelType>, updates: Partial<ModelType>) => Promise<ModelType | void>;
     update: (query: SchemaValueMap<ModelType>, updates: Partial<ModelType>) => Promise<ModelType[]>;
 
-}
-
-export interface IDatabaseServiceRaw<ModelType extends {} = any> {
     loadOneRaw: (query: any) => Promise<Document | null>;
+    save: (doc: Document) => Promise<void>;
+
 }
 
 export type SchemaValueMap<ModelSchema> = {
@@ -47,7 +46,6 @@ export type SchemaValueMap<ModelSchema> = {
 // still just leverage the IRestrictedDatabaseService interface.
 export class DatabaseService<ModelType, CreationInterface> implements
     IDatabaseService<ModelType, CreationInterface>,
-    IDatabaseServiceRaw,
     IRestrictedDatabaseService<ModelType, CreationInterface>
 {
 
@@ -142,6 +140,10 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
         return this._model.findOne(query).exec();
 
+    }
+
+    public async save(doc: Document): Promise<void> {
+        await doc.save();
     }
 
     public async update(query: SchemaValueMap<ModelType>, updates: Partial<ModelType>): Promise<ModelType[]> {

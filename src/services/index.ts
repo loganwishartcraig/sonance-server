@@ -6,8 +6,9 @@ import { PasswordHashService } from './Authentication/PasswordHash';
 import { PasswordSaltService } from './Authentication/PasswordSalt';
 import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '@models';
 import { BillService } from './Bill';
-import { globalErrorFactory } from '@common/ErrorFactory';
+import { globalErrorFactory as errorFactory } from '@common/ErrorFactory';
 import BillParticipantService from './BillParticipant';
+import { BillLineItemService } from './BillLineItem';
 
 require('dotenv').config();
 
@@ -35,7 +36,7 @@ connection.on('error', handleDatabaseError);
 
 const genericServiceConfig = {
     connection,
-    errorFactory: globalErrorFactory,
+    errorFactory,
 } as const;
 
 export const userService = new UserService({ ...genericServiceConfig, modelFactory: userModelFactory });
@@ -44,4 +45,5 @@ export const authService = new AuthenticationService({
     passwordSaltService: new PasswordSaltService({ ...genericServiceConfig, modelFactory: passwordSaltModelFactory }),
 });
 export const billService = new BillService({ ...genericServiceConfig, modelFactory: billBodyModelFactory });
-export const billParticipantService = new BillParticipantService({ billService, errorFactory: globalErrorFactory });
+export const billLineItemService = new BillLineItemService({ errorFactory });
+export const billParticipantService = new BillParticipantService({ errorFactory });
