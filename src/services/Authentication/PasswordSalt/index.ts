@@ -1,11 +1,12 @@
-import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@services/Database';
-import { IPasswordSalt, IPasswordSaltConfig } from '@models';
+import { IPasswordSalt, IPasswordSaltDocument } from '@models';
+import { IDatabaseServiceConfig } from '@services/Database';
+import { IRestrictedDatabaseService, RestrictedDatabaseService } from '@services/RestrictedDatabase';
 
-export type IPasswordSaltService = IDatabaseService<IPasswordSalt, IPasswordSaltConfig>;
-export type IPasswordSaltServiceConfig = IDatabaseServiceConfig<IPasswordSalt>;
+export type IPasswordSaltService = IRestrictedDatabaseService<IPasswordSalt>;
+export type IPasswordSaltServiceConfig = IDatabaseServiceConfig<IPasswordSaltDocument>;
 
 export class PasswordSaltService
-    extends DatabaseService<IPasswordSalt, IPasswordSaltConfig>
+    extends RestrictedDatabaseService<IPasswordSaltDocument, IPasswordSalt>
     implements IPasswordSaltService {
 
     constructor(config: IPasswordSaltServiceConfig) {

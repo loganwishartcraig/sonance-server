@@ -1,11 +1,12 @@
-import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@services/Database';
-import { IPasswordHash, IPasswordHashConfig } from '@models';
+import { IPasswordHash, IPasswordHashDocument } from '@models';
+import { IDatabaseServiceConfig } from '@services/Database';
+import { IRestrictedDatabaseService, RestrictedDatabaseService } from '@services/RestrictedDatabase';
 
-export type IPasswordHashService = IDatabaseService<IPasswordHash, IPasswordHashConfig>;
-export type IPasswordHashServiceConfig = IDatabaseServiceConfig<IPasswordHash>;
+export type IPasswordHashService = IRestrictedDatabaseService<IPasswordHash>;
+export type IPasswordHashServiceConfig = IDatabaseServiceConfig<IPasswordHashDocument>;
 
 export class PasswordHashService
-    extends DatabaseService<IPasswordHash, IPasswordHashConfig>
+    extends RestrictedDatabaseService<IPasswordHashDocument, IPasswordHash>
     implements IPasswordHashService {
 
     constructor(config: IPasswordHashServiceConfig) {

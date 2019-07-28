@@ -47,7 +47,7 @@ export class RestrictedDatabaseService<DocumentType extends Document, ModelType>
 
         const result = await this._model.findOne(query).exec();
 
-        return (result) ? result.toObject() : null;
+        return (result) ? result.toJSON() : null;
 
     }
 
@@ -57,7 +57,7 @@ export class RestrictedDatabaseService<DocumentType extends Document, ModelType>
 
         const record = await this._model.create(payload);
 
-        return record.toObject();
+        return record.toJSON();
 
     }
 
@@ -73,7 +73,7 @@ export class RestrictedDatabaseService<DocumentType extends Document, ModelType>
 
         const record = await this._model.findOneAndUpdate(query, payload, options).exec() as DocumentType;
 
-        return record.toObject();
+        return record.toJSON();
 
     }
 
