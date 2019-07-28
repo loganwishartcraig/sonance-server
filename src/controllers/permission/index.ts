@@ -1,6 +1,5 @@
 import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
 import { GenericError } from '@common/GenericError';
-import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
 import { BillBody, IUser } from '@models';
 import { RequestHandler } from 'express';

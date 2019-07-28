@@ -1,61 +1,50 @@
 import { Connection, Document, Model, QueryFindOneAndUpdateOptions } from 'mongoose';
 import { ModelFactory } from '@models/types';
 import { ErrorFactoryBase } from '@common/ErrorFactory';
+import { GenericError } from '@common/GenericError';
+import { ErrorCode } from '@constants/error_codes';
 
-export interface IDatabaseServiceConfig<T = any> {
+export interface IDatabaseServiceConfig<T extends Document> {
     readonly connection: Connection;
     readonly modelFactory: ModelFactory<T>;
     readonly errorFactory: ErrorFactoryBase;
 }
 
-// Separation of IRestrictedDatabaseService/IDatabaseService
-// was done with the intention of allowing a service to eventually
-// implement a more limited set of APIs for querying data.
-// Mainly to be used with authentication/password tables.
-export interface IRestrictedDatabaseService<
-    ModelType extends {} = any,
-    CreationInterface extends {} = any
-    > {
-    findOne: (query: SchemaValueMap<ModelType>) => Promise<ModelType | void>;
-    insert: (payload: CreationInterface) => Promise<ModelType>;
-    upsert: (query: SchemaValueMap<ModelType>, payload: CreationInterface) => Promise<ModelType>;
-    removeOne: (query: SchemaValueMap<ModelType>) => Promise<void>;
-}
-
 export interface IDatabaseService<
-    ModelType extends {} = any,
-    CreationInterface extends {} = any
-    > extends IRestrictedDatabaseService<ModelType, CreationInterface> {
+    DocumentType extends Document = Document,
+    ModelType extends {} = any
+    > {
 
-    find: (query: SchemaValueMap<ModelType>) => Promise<ModelType[]>;
+    findOne: (query: SchemaValueMap<ModelType>) => Promise<DocumentType | null>;
+    insert: (payload: Partial<ModelType>) => Promise<DocumentType>;
+    upsert: (query: SchemaValueMap<ModelType>, payload: Partial<ModelType>) => Promise<DocumentType>;
+    removeOne: (query: SchemaValueMap<ModelType>) => Promise<void>;
+
+    find: (query: SchemaValueMap<ModelType>) => Promise<DocumentType[]>;
     exists: (query: SchemaValueMap<ModelType>) => Promise<boolean>;
-    updateOne: (query: SchemaValueMap<ModelType>, updates: Partial<ModelType>) => Promise<ModelType | void>;
-    update: (query: SchemaValueMap<ModelType>, updates: Partial<ModelType>) => Promise<ModelType[]>;
-
-    loadOneRaw: (query: any) => Promise<Document | null>;
-    save: (doc: Document) => Promise<void>;
+    updateOne: (query: SchemaValueMap<ModelType>, updates: Partial<DocumentType>) => Promise<DocumentType | null>;
+    update: (query: SchemaValueMap<ModelType>, updates: Partial<DocumentType>) => Promise<DocumentType[]>;
+    save: (doc: DocumentType) => Promise<DocumentType>;
 
 }
 
-export type SchemaValueMap<ModelSchema> = {
-    [key in keyof ModelSchema]?: any;
+export type SchemaValueMap<ModelType> = {
+    [key in keyof ModelType]?: any;
 };
 
-// DatabaseService implements both IDatabaseService/IRestrictedDatabaseService
-// for convenience. This allows password services to extend this class but
-// still just leverage the IRestrictedDatabaseService interface.
-export class DatabaseService<ModelType, CreationInterface> implements
-    IDatabaseService<ModelType, CreationInterface>,
-    IRestrictedDatabaseService<ModelType, CreationInterface>
+export class DatabaseService<DocumentType extends Document, ModelType> implements
+    IDatabaseService<DocumentType, ModelType>
 {
 
     protected readonly _connection: Connection;
     protected readonly _ready: Promise<boolean>;
-    protected readonly _modelFactory: ModelFactory;
+    protected readonly _modelFactory: ModelFactory<DocumentType>;
     protected readonly _errorFactory: ErrorFactoryBase;
-    protected _model: Model<Document>;
+    protected _model: Model<DocumentType>;
 
-    constructor(config: IDatabaseServiceConfig) {
+    private readonly _connectionTimeoutMs: number = 10000;
+
+    constructor(config: IDatabaseServiceConfig<DocumentType>) {
         this._connection = config.connection;
         this._modelFactory = config.modelFactory;
         this._ready = this._initModel();
@@ -63,49 +52,33 @@ export class DatabaseService<ModelType, CreationInterface> implements
         this._connection.on('error', this._handleConnectionError);
     }
 
-    public async find(query: SchemaValueMap<ModelType>): Promise<ModelType[]> {
+    public async find(query: SchemaValueMap<ModelType>): Promise<DocumentType[]> {
 
         await this._ready;
 
-        const results = await this._model.find(query).exec();
-
-        return results.map(result => result.toObject());
+        return this._model.find(query).exec();
 
     }
 
-    public async findOne(query: SchemaValueMap<ModelType>): Promise<ModelType | void> {
+    public async findOne(query: SchemaValueMap<ModelType>): Promise<DocumentType | null> {
 
         await this._ready;
 
-        const result = await this._model.findOne(query).exec();
-
-        if (result) {
-            return result.toObject();
-        }
+        return this._model.findOne(query).exec();
 
     }
 
-    public async insert<PayloadShape extends {}>(
-        payload: PayloadShape
-    ): Promise<ModelType> {
+    public async insert(payload: Partial<ModelType>): Promise<DocumentType> {
 
         await this._ready;
 
-        const insertionPayload = this._formatForInsert(payload);
-        const record = await this._model.create(insertionPayload);
-
-        return record.toObject();
+        return this._model.create(payload);
 
     }
 
-    public async upsert<PayloadShape extends Object>(
-        query: SchemaValueMap<ModelType>,
-        payload: PayloadShape
-    ): Promise<ModelType> {
+    public async upsert(query: SchemaValueMap<ModelType>, payload: Partial<ModelType>): Promise<DocumentType> {
 
         await this._ready;
-
-        const insertionPayload = this._formatForInsert(payload);
 
         const options: QueryFindOneAndUpdateOptions = {
             upsert: true,
@@ -113,9 +86,7 @@ export class DatabaseService<ModelType, CreationInterface> implements
             new: true,
         };
 
-        const record = await this._model.findOneAndUpdate(query, insertionPayload, options).exec();
-
-        return (record as Document).toObject();
+        return this._model.findOneAndUpdate(query, payload, options).exec() as Promise<DocumentType>;
 
     }
 
@@ -134,19 +105,11 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
     }
 
-    public async loadOneRaw(query: any): Promise<Document | null> {
-
-        await this._ready;
-
-        return this._model.findOne(query).exec();
-
+    public async save(doc: DocumentType): Promise<DocumentType> {
+        return doc.save();
     }
 
-    public async save(doc: Document): Promise<void> {
-        await doc.save();
-    }
-
-    public async update(query: SchemaValueMap<ModelType>, updates: Partial<ModelType>): Promise<ModelType[]> {
+    public async update(query: SchemaValueMap<ModelType>, updates: Partial<DocumentType>): Promise<DocumentType[]> {
 
         await this._ready;
 
@@ -158,21 +121,13 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
     public async updateOne(
         query: SchemaValueMap<ModelType>,
-        updates: Partial<ModelType>
-    ): Promise<ModelType | void> {
+        updates: Partial<DocumentType>
+    ): Promise<DocumentType | null> {
 
         await this._ready;
 
-        const updated = await this._model.findOneAndUpdate(query, updates).exec();
+        return this._model.findOneAndUpdate(query, updates).exec();
 
-        if (updated) {
-            updated.toObject();
-        }
-
-    }
-
-    protected _formatForInsert(payload: any): any {
-        return payload;
     }
 
     private async _initModel(): Promise<boolean> {
@@ -189,11 +144,21 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
         new Promise((res, rej) => {
 
+            const timeout = setTimeout(
+                () => rej(this._buildTimeoutError()),
+                this._connectionTimeoutMs
+            );
+
+            const resolve = () => {
+                clearTimeout(timeout);
+                res();
+            };
+
             // ready state is 1 on 'connected'.
             if (this._connection.readyState === 1) {
-                res();
+                resolve();
             } else {
-                this._connection.once('connected', () => res());
+                this._connection.once('connected', () => resolve());
             }
 
         });
@@ -202,6 +167,12 @@ export class DatabaseService<ModelType, CreationInterface> implements
 
     private _handleConnectionError(...args: any[]) {
         console.error('Database error occurred', args);
+    }
+
+    private _buildTimeoutError(): GenericError {
+        return this._errorFactory.build(ErrorCode.CONNECTION_TIMEOUT, {
+            message: 'The database failed to connect before the set timeout',
+        });
     }
 
 }

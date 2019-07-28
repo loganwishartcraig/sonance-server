@@ -1,17 +1,21 @@
 import { ModelName } from '@constants/model_names';
 import { ModelFactory } from '@models/types';
 import { UserSchema } from '@schemas';
-import { Document, Model, Types } from 'mongoose';
+import { Connection, Document } from 'mongoose';
 
 export interface IUser {
-    readonly _id: Types.ObjectId;
+    readonly id: string;
     readonly email: string;
     readonly displayName: string;
     readonly createdOn: Date;
     readonly avatar: string;
 }
 
-export type IUserConfig = Omit<IUser, '_id' | 'createdOn'>;
+export type IUserConfig = Omit<IUser, 'id' | 'createdOn'>;
 
-export const userModelFactory: ModelFactory<IUser> = connection =>
-    connection.model<Document, Model<Document, IUser>>(ModelName.USER, UserSchema);
+export interface IUserDocument extends Omit<IUser, 'id'>, Document {
+    // Left to extend with virtuals if needed
+}
+
+export const userModelFactory: ModelFactory<IUserDocument> = (connection: Connection) =>
+    connection.model<IUserDocument>(ModelName.USER, UserSchema);

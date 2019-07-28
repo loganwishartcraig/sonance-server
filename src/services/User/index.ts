@@ -1,20 +1,20 @@
-import { IDatabaseService, IDatabaseServiceConfig, DatabaseService } from '@services/Database';
-import { IUser, IUserConfig } from '@models';
+import { IUser, IUserDocument } from '@models';
+import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '@services/Database';
 
-export interface IUserService extends IDatabaseService<IUser, IUserConfig> {
-    findByEmail(email: string): Promise<IUser | void>;
+export interface IUserService extends IDatabaseService<IUserDocument, IUser> {
+    findByEmail(email: string): Promise<IUserDocument | null>;
 }
-export type IUserServiceConfig = IDatabaseServiceConfig<IUser>;
+export type IUserServiceConfig = IDatabaseServiceConfig<IUserDocument>;
 
 export class UserService
-    extends DatabaseService<IUser, IUserConfig>
+    extends DatabaseService<IUserDocument, IUser>
     implements IUserService {
 
     constructor(config: IUserServiceConfig) {
         super(config);
     }
 
-    public async findByEmail(email: string): Promise<IUser | void> {
+    public async findByEmail(email: string): Promise<IUserDocument | null> {
         return this.findOne({ email });
     }
 

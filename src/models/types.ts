@@ -1,3 +1,3 @@
-import { Connection, Document, Model } from 'mongoose';
+import { Connection, Model, Document } from 'mongoose';
 
-export type ModelFactory<T = any> = (connection: Connection) => Model<Document, T>;
+export type ModelFactory<T extends Document = Document> = (connection: Connection) => Model<T>;
