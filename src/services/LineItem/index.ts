@@ -4,7 +4,7 @@ import { ErrorCode } from '@constants/error_codes';
 import { IBillDocument, ILineItemConfig, ILineItemDocument, ILineItemUpdate, IUser } from '@models';
 import { Types } from 'mongoose';
 
-export interface IBillLineItemService {
+export interface ILineItemService {
     getAll(bill: IBillDocument): Promise<ILineItemDocument[]>;
     getById(bill: IBillDocument, id: string): Promise<ILineItemDocument | void>;
     deleteById(bill: IBillDocument, id: string): Promise<void>;
@@ -19,15 +19,15 @@ export interface IBillLineItemService {
     release(bill: IBillDocument, id: string): Promise<ILineItemDocument>;
 }
 
-export interface IBillLineItemServiceConfig {
+export interface ILineItemServiceConfig {
     errorFactory: ErrorFactoryBase;
 }
 
-export class BillLineItemService implements IBillLineItemService {
+export class LineItemService implements ILineItemService {
 
     private readonly _errorFactory: ErrorFactoryBase;
 
-    constructor(config: IBillLineItemServiceConfig) {
+    constructor(config: ILineItemServiceConfig) {
         this._errorFactory = config.errorFactory;
     }
 

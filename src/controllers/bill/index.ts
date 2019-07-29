@@ -6,34 +6,35 @@ import { ErrorCode } from '@constants/error_codes';
 import { IBillConfig, ILineItemConfig, IUser } from '@models';
 import { INewBillBodyRequest, INewBillLineItemRequest } from '@routes/api';
 import {
-    billParticipantService,
+    participantService,
     billService,
     IBillParticipantService,
     IBillService,
-    billLineItemService
+    lineItemService
 } from '@services';
-import { IBillLineItemService } from '@services/BillLineItem';
+import { ILineItemService } from '@services/LineItem';
 import { RequestHandler } from 'express';
 import { Request, Response } from 'express-serve-static-core';
+import { Types } from 'mongoose';
 
 export interface IBillControllerConfig {
     billService: IBillService;
     participantService: IBillParticipantService;
-    billLineItemService: IBillLineItemService;
+    billLineItemService: ILineItemService;
     errorFactory: ErrorFactoryBase;
 }
 
 class BillController {
 
     private _billService: IBillService;
-    private _billParticipantService: IBillParticipantService;
-    private _billLineItemService: IBillLineItemService;
+    private _participantService: IBillParticipantService;
+    private _lineItemService: ILineItemService;
     private _errorFactory: ErrorFactoryBase;
 
     constructor(config: IBillControllerConfig) {
         this._billService = config.billService;
-        this._billParticipantService = config.participantService;
-        this._billLineItemService = config.billLineItemService;
+        this._participantService = config.participantService;
+        this._lineItemService = config.billLineItemService;
         this._errorFactory = config.errorFactory;
     }
 
@@ -42,7 +43,7 @@ class BillController {
     ): RequestHandler => wrapCatch(async (req, res, next) => {
 
         const billId = idAccessor(req);
-        const bill = await this._billService.loadOneRaw({ _id: billId });
+        const bill = await this._billService.getById(billId);
 
         if (!bill) {
             throw this._buildBillNotFoundError(billId);
@@ -80,7 +81,7 @@ class BillController {
 
         const bill = this._extractLocalValue(res, 'bill');
 
-        (res.locals as IResponseLocals).lines = await this._billLineItemService.getAll(bill);
+        (res.locals as IResponseLocals).lines = await this._lineItemService.getAll(bill);
 
         next();
 
@@ -93,7 +94,7 @@ class BillController {
         const lineId = idAccessor(req);
         const bill = this._extractLocalValue(res, 'bill');
 
-        const line = await this._billLineItemService.getById(bill, lineId);
+        const line = await this._lineItemService.getById(bill, lineId);
 
         if (!line) {
             throw this._buildLineItemNotFoundError(bill._id, lineId);
@@ -124,7 +125,7 @@ class BillController {
         const { locals: { bill } } = res;
         const lineId = idAccessor(req);
 
-        await this._billLineItemService.deleteById(bill, lineId);
+        await this._lineItemService.deleteById(bill, lineId);
 
         next();
 
@@ -146,7 +147,7 @@ class BillController {
 
         const lineConfig = this._serializeLineConfig(req.body.line, req.user);
 
-        const [line] = await this._billLineItemService.create(bill._id, [lineConfig]);
+        const [line] = await this._lineItemService.create(bill, [lineConfig]);
 
         (res.locals as IResponseLocals).line = line;
 
@@ -159,7 +160,7 @@ class BillController {
         const { body: { ways }, params: { lineId } } = req;
         const bill = this._extractLocalValue(res, 'bill');
 
-        (res.locals as IResponseLocals).lines = await this._billLineItemService.split(bill, lineId, ways);
+        (res.locals as IResponseLocals).lines = await this._lineItemService.split(bill, lineId, ways);
 
         next();
 
@@ -170,7 +171,7 @@ class BillController {
         const { params: { lineId }, user } = req;
         const bill = this._extractLocalValue(res, 'bill');
 
-        (res.locals as IResponseLocals).line = await this._billLineItemService.claim(bill, lineId, user);
+        (res.locals as IResponseLocals).line = await this._lineItemService.claim(bill, lineId, user);
 
         next();
 
@@ -181,7 +182,7 @@ class BillController {
         const { params: { lineId } } = req;
         const bill = this._extractLocalValue(res, 'bill');
 
-        (res.locals as IResponseLocals).lineUpdates = await this._billLineItemService.release(bill, lineId);
+        (res.locals as IResponseLocals).lineUpdates = await this._lineItemService.release(bill, lineId);
 
         next();
 
@@ -192,7 +193,8 @@ class BillController {
         const { user } = req;
         const bill = this._extractLocalValue(res, 'bill');
 
-        (res.locals as IResponseLocals).participant = await this._billParticipantService.create(bill, user);
+        (res.locals as IResponseLocals).participant = await this._participantService.create(bill, user);
+
         next();
 
     });
@@ -225,15 +227,15 @@ class BillController {
             shareCode: 'XXXXXX',
             lines: lines.map(line => this._serializeLineConfig(line, user)),
             participants: [],
-            createdBy: user._id,
+            createdBy: user.id,
         };
     }
 
     private _serializeLineConfig(config: INewBillLineItemRequest['line'], user: IUser): ILineItemConfig {
         // TODO: Extract serialization to validation layer
         return {
-            createdBy: user._id,
-            claimedBy: config.isClaimed ? user._id : undefined,
+            createdBy: user.id,
+            claimedBy: config.isClaimed ? user.id : undefined,
             claimedOn: config.isClaimed ? new Date() : undefined,
             isShared: !!config.isShared,
             price: config.price,
@@ -281,7 +283,7 @@ class BillController {
 
     }
 
-    private _buildLineItemNotFoundError(billId: string, lineId: string): GenericError {
+    private _buildLineItemNotFoundError(billId: Types.ObjectId, lineId: string): GenericError {
         return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
             message: 'The requested line item could not be found.',
             meta: { billId, lineId },
@@ -292,7 +294,7 @@ class BillController {
 
 export const billController = new BillController({
     billService,
-    billLineItemService,
+    billLineItemService: lineItemService,
     errorFactory: globalErrorFactory,
-    participantService: billParticipantService,
+    participantService,
 });

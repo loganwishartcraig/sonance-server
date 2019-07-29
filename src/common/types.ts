@@ -1,5 +1,4 @@
-import { IBill, ILineItemConfig, IParticipant } from '@models';
-import { Document } from 'mongoose';
+import { IBill, IBillDocument, ILineItemConfig, ILineItemDocument, IParticipant, IParticipantDocument, ILineItem } from '@models';
 
 export type Optional<T extends {}, Keys extends keyof T> = {
     [key in Keys]?: T[key];
@@ -7,16 +6,16 @@ export type Optional<T extends {}, Keys extends keyof T> = {
 
 export interface IResponseLocals {
 
-    bill?: Document;
-    bills?: IBill[];
+    bill?: IBillDocument;
+    bills?: IBillDocument[];
     billUpdates?: Partial<IBill>[];
 
-    line?: ILineItemConfig;
-    lines?: ILineItemConfig[];
-    lineUpdates?: Partial<ILineItemConfig>[];
+    line?: ILineItemDocument;
+    lines?: ILineItemDocument[];
+    lineUpdates?: Partial<ILineItem>[];
 
-    participant?: IParticipant;
-    participants?: IParticipant[];
+    participant?: IParticipantDocument;
+    participants?: IParticipantDocument[];
     participantUpdates?: Partial<IParticipant>[];
 
 }

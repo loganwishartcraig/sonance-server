@@ -2,7 +2,7 @@ import { billController, validationController } from '@controllers';
 import { ILineItemConfig } from '@models';
 import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
-import { INewLineItemRequest } from '@services/BillLineItem';
+import { INewLineItemRequest } from '@services/LineItem';
 
 const router = Router({ mergeParams: true });
 

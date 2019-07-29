@@ -7,14 +7,14 @@ import { PasswordSaltService } from './Authentication/PasswordSalt';
 import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '@models';
 import { BillService } from './Bill';
 import { globalErrorFactory as errorFactory } from '@common/ErrorFactory';
-import BillParticipantService from './BillParticipant';
-import { BillLineItemService } from './BillLineItem';
+import ParticipantService from './Participant';
+import { LineItemService } from './LineItem';
 
 require('dotenv').config();
 
 export { IAuthenticationService } from './Authentication';
 export { IBillService } from './Bill';
-export { IBillParticipantService } from './BillParticipant';
+export { IParticipantService as IBillParticipantService } from './Participant';
 export { IUserService } from './User';
 
 // TODO Extract this into a 'mongoose config' file
@@ -45,5 +45,5 @@ export const authService = new AuthenticationService({
     passwordSaltService: new PasswordSaltService({ ...genericServiceConfig, modelFactory: passwordSaltModelFactory }),
 });
 export const billService = new BillService({ ...genericServiceConfig, modelFactory: billBodyModelFactory });
-export const billLineItemService = new BillLineItemService({ errorFactory });
-export const billParticipantService = new BillParticipantService({ errorFactory });
+export const lineItemService = new LineItemService({ errorFactory });
+export const participantService = new ParticipantService({ errorFactory });

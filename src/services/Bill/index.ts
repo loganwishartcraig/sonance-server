@@ -7,7 +7,6 @@ export interface IBillService extends IDatabaseService<IBillDocument, IBill> {
     getById(billId: string): Promise<IBillDocument | null>;
     getByShareCode(shareCode: string): Promise<IBillDocument | null>;
     removeById(billId: string | Types.ObjectId): Promise<void>;
-    // insertParticipants(billId: string | Types.ObjectId, configs: IParticipantConfig[]): Promise<IParticipant[]>;
     updateBill(billId: string | Types.ObjectId, updates: IBIllBodyUpdateConfig): Promise<IBillDocument | null>;
 }
 export type IBillServiceConfig = IDatabaseServiceConfig<IBillDocument>;

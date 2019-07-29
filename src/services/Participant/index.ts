@@ -3,7 +3,7 @@ import { ErrorCode } from '@constants/error_codes';
 import { IBillDocument, IParticipantConfig, IParticipantDocument, IUser } from '@models';
 import { Types } from 'mongoose';
 
-export interface IBillParticipantService {
+export interface IParticipantService {
     create(bill: IBillDocument, user: IUser): Promise<IParticipantDocument>;
 }
 
@@ -55,16 +55,16 @@ export interface IBillParticipantService {
 //  - Inject the parent document service class
 //  -
 
-export interface IBillParticipantServiceConfig {
+export interface IParticipantServiceConfig {
     errorFactory: ErrorFactoryBase;
 }
 
-export default class BillParticipantService
-    implements IBillParticipantService {
+export default class ParticipantService
+    implements IParticipantService {
 
     private readonly _errorFactory: ErrorFactoryBase;
 
-    constructor(config: IBillParticipantServiceConfig) {
+    constructor(config: IParticipantServiceConfig) {
         this._errorFactory = config.errorFactory;
     }
 
