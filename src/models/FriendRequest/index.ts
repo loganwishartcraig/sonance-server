@@ -1,18 +1,24 @@
 import { ModelName } from '@constants/model_names';
 import { ModelFactory } from '@models/types';
 import { FriendRequestSchema } from '@schemas';
-import { Document, Model, Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface IFriendRequest {
-    readonly _id: Types.ObjectId;
-    readonly fromUser: Types.ObjectId;
-    readonly toUser: Types.ObjectId;
+    readonly id: string;
+    readonly fromUser: string;
+    readonly toUser: string;
     readonly invitedOn: Date;
     readonly respondedOn: Date | void;
     readonly rejected: boolean | void;
 }
 
-export type IFriendRequestConfig = Omit<IFriendRequest, '_id' | 'respondedOn' | 'rejected'>;
+export type IFriendRequestConfig = Omit<IFriendRequest, 'id' | 'respondedOn' | 'rejected'>;
 
-export const friendRequestModelFactory: ModelFactory<IFriendRequest> = connection =>
-    connection.model<Document, Model<Document, IFriendRequest>>(ModelName.FRIEND_REQUEST, FriendRequestSchema);
+export interface IFriendRequestDocument extends Omit<IFriendRequest, 'id' | 'fromUser' | 'toUser'>, Document {
+    _id: Types.ObjectId;
+    fromUser: Types.ObjectId;
+    toUser: Types.ObjectId;
+}
+
+export const friendRequestModelFactory: ModelFactory<IFriendRequestDocument> = connection =>
+    connection.model<IFriendRequestDocument>(ModelName.FRIEND_REQUEST, FriendRequestSchema);

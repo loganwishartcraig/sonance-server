@@ -17,19 +17,21 @@ export interface IDatabaseService<
 
     findOne: (query: SchemaValueMap<ModelType>) => Promise<DocumentType | null>;
     insert: (payload: Partial<ModelType>) => Promise<DocumentType>;
-    upsert: (query: SchemaValueMap<ModelType>, payload: Partial<ModelType>) => Promise<DocumentType>;
+    upsert: (query: SchemaValueMap<ModelType>, payload: any) => Promise<DocumentType>;
     removeOne: (query: SchemaValueMap<ModelType>) => Promise<void>;
 
     find: (query: SchemaValueMap<ModelType>) => Promise<DocumentType[]>;
     exists: (query: SchemaValueMap<ModelType>) => Promise<boolean>;
-    updateOne: (query: SchemaValueMap<ModelType>, updates: Partial<DocumentType>) => Promise<DocumentType | null>;
-    update: (query: SchemaValueMap<ModelType>, updates: Partial<DocumentType>) => Promise<DocumentType[]>;
+    updateOne: (query: SchemaValueMap<ModelType>, updates: any) => Promise<DocumentType | null>;
+    update: (query: SchemaValueMap<ModelType>, updates: any) => Promise<DocumentType[]>;
     save: (doc: DocumentType) => Promise<DocumentType>;
 
 }
 
 export type SchemaValueMap<ModelType> = {
     [key in keyof ModelType]?: any;
+} & {
+    _id?: any;
 };
 
 export class DatabaseService<DocumentType extends Document, ModelType> implements
@@ -121,7 +123,7 @@ export class DatabaseService<DocumentType extends Document, ModelType> implement
 
     public async updateOne(
         query: SchemaValueMap<ModelType>,
-        updates: Partial<DocumentType>
+        updates: any
     ): Promise<DocumentType | null> {
 
         await this._ready;

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { IBillParticipant } from '@models';
+import { IParticipant } from '@models';
 import { billController } from '@controllers';
 
 const router = Router({ mergeParams: true });
@@ -9,7 +9,7 @@ export interface IJoinBillRequest {
 }
 
 export interface IJoinBillResponse {
-    participant: IBillParticipant;
+    participant: IParticipant;
 }
 
 router.put(

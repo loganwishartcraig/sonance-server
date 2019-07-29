@@ -1,10 +1,10 @@
-import { ErrorCode } from '@constants/error_codes';
-import { IBillParticipant, IBillParticipantConfig, IUser, IBillBody } from '@models';
-import { Document, Types } from 'mongoose';
 import { ErrorFactoryBase } from '@common/ErrorFactory';
+import { ErrorCode } from '@constants/error_codes';
+import { IBillDocument, IParticipantConfig, IParticipantDocument, IUser } from '@models';
+import { Types } from 'mongoose';
 
 export interface IBillParticipantService {
-    create(bill: Document, user: IUser): Promise<IBillParticipant>;
+    create(bill: IBillDocument, user: IUser): Promise<IParticipantDocument>;
 }
 
 /**
@@ -41,7 +41,7 @@ export interface IBillParticipantService {
     - Wrap the parent document in a container class that provides an interface to interact with the sub documents
             Pros: Allows no dependency on the parent document service class. Removes any need
                   to provide extra parent data for method calls.
-            Cons: Requires wrapping the loaded document each time using this class. Expands the bondary of the
+            Cons: Requires wrapping the loaded document each time using this class. Expands the boundary of the
                   Document class, as each constructor call depends on a loaded Document.
             Mitigation: Could create a factory to isolate consumer from details. Factory
                         could have parent service injected and be responsible for the
@@ -68,49 +68,47 @@ export default class BillParticipantService
         this._errorFactory = config.errorFactory;
     }
 
-    public async create(bill: Document, user: IUser): Promise<IBillParticipant> {
+    public async create(bill: IBillDocument, user: IUser): Promise<IParticipantDocument> {
 
-        const existingParticipant = this._findParticipant(bill, user._id);
+        const existingParticipant = this._findParticipant(bill, user.id);
 
         if (existingParticipant) {
             throw this._errorFactory.build(ErrorCode.RECORD_ALREADY_EXISTS, {
                 message: 'The user is already a member of that bill',
-                meta: { userId: user._id, billId: bill._id },
+                meta: { userId: user.id, billId: bill._id },
             });
         }
 
         const config = this._resolveParticipantConfig(user);
-        const participant = (bill as any).participants.push(config);
+        bill.participants.push(config);
 
-        await bill.save();
-
-        return participant;
+        return bill.participants[bill.participants.length - 1];
 
     }
 
     private _findParticipant(
-        bill: Document,
+        bill: IBillDocument,
         userId: string | Types.ObjectId
-    ): IBillParticipant | void {
+    ): IParticipantDocument | void {
 
-        const [existingParticipant] = (bill as any).participants.filter(
-            ({ participant }: IBillParticipant) => participant.equals(userId)
+        const [existingParticipant] = bill.participants.filter(
+            ({ participant }) => participant.equals(userId)
         );
 
         return existingParticipant;
 
     }
 
-    private _resolveParticipantConfig(user: IUser, invitedBy?: IUser): IBillParticipantConfig {
+    private _resolveParticipantConfig(user: IUser, invitedBy?: IUser): IParticipantConfig {
 
         const date = new Date();
 
         return {
-            invitedBy: (invitedBy) ? invitedBy._id : undefined,
+            invitedBy: (invitedBy) ? invitedBy.id : undefined,
             invitedOn: (invitedBy) ? date : undefined,
             joinedOn: date,
             leftOn: undefined,
-            participant: user._id,
+            participant: user.id,
         };
     }
 

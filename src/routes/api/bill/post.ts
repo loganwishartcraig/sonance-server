@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
-import { IBillBody } from '@models';
+import { IBill } from '@models';
 import { validationController, billController } from '@controllers';
 
 const router = Router();
@@ -13,7 +13,7 @@ export interface INewBillBodyRequest {
 }
 
 export interface INewBillBodyResponse {
-    bill: IBillBody;
+    bill: IBill;
 }
 
 const bodySchemaValidation: Record<string, ValidationParamSchema> = {

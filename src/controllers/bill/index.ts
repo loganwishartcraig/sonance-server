@@ -3,7 +3,7 @@ import { GenericError } from '@common/GenericError';
 import { IResponseLocals } from '@common/types';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
-import { IBillBodyConfig, IBillLineItemConfig, IUser } from '@models';
+import { IBillConfig, ILineItemConfig, IUser } from '@models';
 import { INewBillBodyRequest, INewBillLineItemRequest } from '@routes/api';
 import {
     billParticipantService,
@@ -215,7 +215,7 @@ class BillController {
             ...billConfig
         } }: INewBillBodyRequest,
         user: IUser
-    ): IBillBodyConfig {
+    ): IBillConfig {
 
         // TODO: implement share codes correctly.
         // TODO: Extract serialization to validation layer
@@ -229,7 +229,7 @@ class BillController {
         };
     }
 
-    private _serializeLineConfig(config: INewBillLineItemRequest['line'], user: IUser): IBillLineItemConfig {
+    private _serializeLineConfig(config: INewBillLineItemRequest['line'], user: IUser): ILineItemConfig {
         // TODO: Extract serialization to validation layer
         return {
             createdBy: user._id,

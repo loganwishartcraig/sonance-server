@@ -1,7 +1,7 @@
 import { ModelName } from '@constants/model_names';
 import { ModelFactory } from '@models/types';
 import { PasswordSaltSchema } from '@schemas';
-import { Document, Model } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 
 export interface IPasswordSalt {
     readonly id: string;
@@ -10,10 +10,10 @@ export interface IPasswordSalt {
 }
 
 // All fields required
-export type IPasswordSaltConfig = Omit<IPasswordSalt, '_id'>;
+export type IPasswordSaltConfig = Omit<IPasswordSalt, 'id'>;
 
 export interface IPasswordSaltDocument extends Omit<IPasswordSalt, 'id'>, Document {
-    // Left open to extend as needed.
+    _id: Types.ObjectId;
 }
 
 export const passwordSaltModelFactory: ModelFactory<IPasswordSaltDocument> = connection =>

@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { IBillLineItem } from '@models';
+import { ILineItemConfig } from '@models';
 import { billController } from '@controllers';
 
 export interface IGetLineByIdResponse {
-    line: IBillLineItem;
+    line: ILineItemConfig;
 }
 
 const router = Router({ mergeParams: true });

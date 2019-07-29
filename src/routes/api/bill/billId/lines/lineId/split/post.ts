@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { IBillLineItem } from '@models';
+import { ILineItemConfig } from '@models';
 import { check } from 'express-validator';
 import { validationController, billController } from '@controllers';
 
@@ -10,7 +10,7 @@ export interface ISplitLineRequest {
 }
 
 export interface ISplitLineResponse {
-    lines: IBillLineItem[];
+    lines: ILineItemConfig[];
 }
 
 const validation = [

@@ -1,5 +1,5 @@
 import { billController, validationController } from '@controllers';
-import { IBillLineItem } from '@models';
+import { ILineItemConfig } from '@models';
 import { Router } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
 import { INewLineItemRequest } from '@services/BillLineItem';
@@ -11,7 +11,7 @@ export interface ICreateBillLineItemRequest {
 }
 
 export interface INewBillLineItemResponse {
-    line: IBillLineItem;
+    line: ILineItemConfig;
 }
 
 const bodySchemaValidation: Record<string, ValidationParamSchema> = {

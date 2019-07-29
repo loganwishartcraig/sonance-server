@@ -1,7 +1,7 @@
 import { ModelName } from '@constants/model_names';
 import { ModelFactory } from '@models/types';
 import { PasswordHashSchema } from '@schemas';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface IPasswordHash {
     readonly id: string;
@@ -10,10 +10,10 @@ export interface IPasswordHash {
 }
 
 // All fields required for creation
-export type IPasswordHashConfig = Omit<IPasswordHash, '_id'>;
+export type IPasswordHashConfig = Omit<IPasswordHash, 'id'>;
 
 export interface IPasswordHashDocument extends Omit<IPasswordHash, 'id'>, Document {
-    // left open for extension
+    _id: Types.ObjectId;
 }
 
 export const passwordHashModelFactory: ModelFactory<IPasswordHashDocument> = connection =>

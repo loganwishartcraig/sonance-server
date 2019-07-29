@@ -1,9 +1,9 @@
 import { billController } from '@controllers';
-import { IBillBody } from '@models';
+import { IBill } from '@models';
 import { Router } from 'express';
 
 export interface IGetBillBodyResponse {
-    bill: IBillBody;
+    bill: IBill;
 }
 
 const router = Router({ mergeParams: true });

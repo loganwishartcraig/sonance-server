@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { IBillBody } from '@models';
+import { IBill } from '@models';
 import { validationController, authController, billController } from '@controllers';
 
 export interface IGetAllBillBodiesResponse {
-    bills: IBillBody[];
+    bills: IBill[];
 }
 
 const router = Router();

@@ -1,41 +1,34 @@
-import { ErrorCode } from '@constants/error_codes';
-import {
-    IBillBody,
-    IBillBodyConfig,
-    IBIllBodyUpdateConfig,
-    IBillParticipant,
-    IBillParticipantConfig
-} from '@models';
+import { IBill, IBIllBodyUpdateConfig, IBillDocument } from '@models';
 import { DatabaseService, IDatabaseService, IDatabaseServiceConfig } from '@services/Database';
 import { Types } from 'mongoose';
 
-export interface IBillService extends IDatabaseService<IBillBody, IBillBodyConfig> {
-    getByCreatorId(userId: string): Promise<IBillBody[]>;
-    getById(billId: string): Promise<IBillBody | void>;
-    getByShareCode(shareCode: string): Promise<IBillBody | void>;
+export interface IBillService extends IDatabaseService<IBillDocument, IBill> {
+    getByCreatorId(userId: string): Promise<IBillDocument[]>;
+    getById(billId: string): Promise<IBillDocument | null>;
+    getByShareCode(shareCode: string): Promise<IBillDocument | null>;
     removeById(billId: string | Types.ObjectId): Promise<void>;
-    insertParticipants(billId: string | Types.ObjectId, configs: IBillParticipantConfig[]): Promise<IBillParticipant[]>;
-    updateBill(billId: string | Types.ObjectId, updates: IBIllBodyUpdateConfig): Promise<IBillBody | void>;
+    // insertParticipants(billId: string | Types.ObjectId, configs: IParticipantConfig[]): Promise<IParticipant[]>;
+    updateBill(billId: string | Types.ObjectId, updates: IBIllBodyUpdateConfig): Promise<IBillDocument | null>;
 }
-export type IBillServiceConfig = IDatabaseServiceConfig<IBillBody>;
+export type IBillServiceConfig = IDatabaseServiceConfig<IBillDocument>;
 
 export class BillService
-    extends DatabaseService<IBillBody, IBillBodyConfig>
+    extends DatabaseService<IBillDocument, IBill>
     implements IBillService {
 
     constructor(config: IBillServiceConfig) {
         super(config);
     }
 
-    public async getByCreatorId(userId: string): Promise<IBillBody[]> {
+    public async getByCreatorId(userId: string): Promise<IBillDocument[]> {
         return this.find({ createdBy: userId });
     }
 
-    public async getById(billId: string): Promise<IBillBody | void> {
+    public async getById(billId: string): Promise<IBillDocument | null> {
         return this.findOne({ _id: billId });
     }
 
-    public async getByShareCode(shareCode: string): Promise<IBillBody | void> {
+    public async getByShareCode(shareCode: string): Promise<IBillDocument | null> {
         return this.findOne({ shareCode });
     }
 
@@ -46,34 +39,31 @@ export class BillService
     public async updateBill(
         billId: string | Types.ObjectId,
         updates: IBIllBodyUpdateConfig
-    ): Promise<IBillBody | void> {
-
-        // TODO: Remove this any cast here
-        return await this.updateOne({ _id: billId as any }, updates);
-
+    ): Promise<IBillDocument | null> {
+        return await this.updateOne({ _id: billId }, updates);
     }
 
-    public async insertParticipants(
-        billId: string | Types.ObjectId,
-        configs: IBillParticipantConfig[]
-    ): Promise<IBillParticipant[]> {
+    // public async insertParticipants(
+    //     billId: string | Types.ObjectId,
+    //     configs: IParticipantConfig[]
+    // ): Promise<IParticipant[]> {
 
-        const bill = await this.loadOneRaw({ _id: billId });
+    //     const bill = await this.loadOneRaw({ _id: billId });
 
-        if (!bill) {
-            throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
-        }
+    //     if (!bill) {
+    //         throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
+    //     }
 
-        const sliceStart = (bill as any).participants.length;
+    //     const sliceStart = (bill as any).participants.length;
 
-        (bill as any).participants.push(...configs);
+    //     (bill as any).participants.push(...configs);
 
-        const participants = (bill as any).participants.slice(sliceStart);
+    //     const participants = (bill as any).participants.slice(sliceStart);
 
-        await bill.save();
+    //     await bill.save();
 
-        return participants;
+    //     return participants;
 
-    }
+    // }
 
 }

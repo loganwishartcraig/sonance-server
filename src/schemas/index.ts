@@ -1,8 +1,8 @@
 
-import BillBodySchema from './BillBody';
-import BillLineItemSchema from './BillLineItem';
-import BillParticipantSchema from './BillParticipant';
-import BillPaymentSchema from './BillPayment';
+import BillBodySchema from './Bill';
+import BillLineItemSchema from './LineItem';
+import BillParticipantSchema from './Participant';
+import BillPaymentSchema from './Payment';
 import FriendGroupSchema from './FriendGroup';
 import FriendGroupMemberSchema from './FriendGroupMember';
 import FriendRequestSchema from './FriendRequest';
