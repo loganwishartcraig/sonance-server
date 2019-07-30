@@ -72,7 +72,7 @@ class AuthenticationController {
 
             const selectedUserId = selector(req, res);
 
-            if (selectedUserId === (req.user as IUser)._id.toHexString()) {
+            if (selectedUserId === (req.user as IUser).id) {
                 return next();
             }
 

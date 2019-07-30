@@ -20,6 +20,8 @@ export class ErrorFactory extends ErrorFactoryBase {
             [ErrorCode.UNKNOWN_ERROR]: 'An unknown error ocurred.',
             [ErrorCode.INVALID_PAYLOAD]: 'The payload provided is invalid.',
             [ErrorCode.REQUEST_REJECTED]: 'The request was rejected.',
+            [ErrorCode.CONNECTION_TIMEOUT]: 'The request to our database timed out.',
+            [ErrorCode.INTERNAL_ERROR]: 'An internal error ocurred.',
         };
 
     private static _defaultHttpStatus: {
@@ -35,6 +37,8 @@ export class ErrorFactory extends ErrorFactoryBase {
             [ErrorCode.UNKNOWN_ERROR]: 500,
             [ErrorCode.INVALID_PAYLOAD]: 422,
             [ErrorCode.REQUEST_REJECTED]: 422,
+            [ErrorCode.CONNECTION_TIMEOUT]: 500,
+            [ErrorCode.INTERNAL_ERROR]: 500,
         };
 
     public build(code: ErrorCode, overrides: Partial<Omit<IGenericError, 'code'>> = {}): GenericError {

@@ -80,7 +80,7 @@ passport.deserializeUser(wrapCatch(
       throw globalErrorFactory.build(ErrorCode.RECORD_NOT_FOUND);
     }
 
-    done(null, user);
+    done(null, user.toJSON());
 
   })
 );

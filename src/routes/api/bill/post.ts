@@ -1,14 +1,17 @@
-import { Router } from 'express';
-import { checkSchema, ValidationParamSchema } from 'express-validator';
+import { IResponseLocals, ILoadedResponseLocals } from '@common/types';
+import { billController, validationController } from '@controllers';
 import { IBill } from '@models';
-import { validationController, billController } from '@controllers';
+import { Router } from 'express';
+import { Request, Response } from 'express-serve-static-core';
+import { checkSchema, ValidationParamSchema } from 'express-validator';
+import { ICreateLineItemRequest } from './billId/lines/post';
 
 const router = Router();
 export interface INewBillBodyRequest {
     bill: {
         tax: number;
         tip: number;
-        lines?: any[];
+        lines?: ICreateLineItemRequest['line'][];
     };
 }
 
@@ -51,7 +54,19 @@ router.post(
     '/',
     checkSchema(bodySchemaValidation),
     validationController.ensureNoErrors,
-    billController.createBill
+    billController.createBill,
+    billController.saveBill,
+    (_: Request, res: Response) => {
+
+        const { bill } = res.locals as ILoadedResponseLocals;
+
+        const payload: INewBillBodyResponse = {
+            bill: bill.toJSON(),
+        };
+
+        return res.json(payload);
+
+    }
 );
 
 export { router as rootPostRouter };

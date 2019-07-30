@@ -7,7 +7,7 @@ import { IResponseLocals } from '@common/types';
 import { GenericError } from '@common/GenericError';
 import { Response, Request } from 'express';
 
-class ValidationController {
+class ResponseController {
 
     private _errorFactory: ErrorFactoryBase;
 
@@ -15,20 +15,6 @@ class ValidationController {
         this._errorFactory = errorFactory;
     }
 
-    public ensureNoErrors: RequestHandler = wrapCatch(async (req, res, next) => {
-
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            throw this._errorFactory.build(ErrorCode.INVALID_PAYLOAD, {
-                meta: errors.array(),
-            });
-        }
-
-        next();
-
-    });
-
 }
 
-export const validationController = new ValidationController(globalErrorFactory);
+export const responseController = new ResponseController(globalErrorFactory);

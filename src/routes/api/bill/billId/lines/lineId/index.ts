@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
 import { getLineByIdRouter } from './get';
-import { validationController } from '@controllers';
+import { validationController, billController } from '@controllers';
 import { deleteLineByIdRouter } from './delete';
 import { splitLineRouter } from './split/post';
 import { claimLineRouter } from './claim/post';
@@ -17,8 +17,8 @@ router.use(
     '/:lineId',
     validators,
     validationController.ensureNoErrors,
-    getLineByIdRouter,
     deleteLineByIdRouter,
+    getLineByIdRouter,
     splitLineRouter,
     claimLineRouter,
     releaseLineRouter

@@ -19,3 +19,5 @@ export interface IResponseLocals {
     participantUpdates?: Partial<IParticipant>[];
 
 }
+
+export type ILoadedResponseLocals = Required<IResponseLocals>;

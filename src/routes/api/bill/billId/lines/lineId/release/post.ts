@@ -5,7 +5,12 @@ const router = Router({ mergeParams: true });
 
 router.post(
     '/release',
-    billController.releaseLine
+    billController.loadLineById(),
+    billController.releaseLine,
+    billController.saveBill,
+    (_req, res) => {
+        res.sendStatus(204);
+    }
 );
 
 export { router as releaseLineRouter };

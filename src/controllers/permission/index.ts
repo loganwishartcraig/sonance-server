@@ -21,7 +21,7 @@ class PermissionController {
         const user: IUser = req.user;
         const bill = res.locals.bill;
 
-        if (!user || !user._id) {
+        if (!user || !user.id) {
             next(this._resolveInvalidUserError());
         } else if (!bill) {
             next(this._resolveInvalidBillError());

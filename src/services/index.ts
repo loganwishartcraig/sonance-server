@@ -14,7 +14,8 @@ require('dotenv').config();
 
 export { IAuthenticationService } from './Authentication';
 export { IBillService } from './Bill';
-export { IParticipantService as IBillParticipantService } from './Participant';
+export { ILineItemService } from './LineItem';
+export { IParticipantService } from './Participant';
 export { IUserService } from './User';
 
 // TODO Extract this into a 'mongoose config' file

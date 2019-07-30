@@ -1,40 +1,41 @@
-import { ErrorFactoryBase, globalErrorFactory } from '@common/ErrorFactory';
+import { ErrorFactoryBase, globalErrorFactory as errorFactory } from '@common/ErrorFactory';
 import { GenericError } from '@common/GenericError';
 import { IResponseLocals } from '@common/types';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
 import { IBillConfig, ILineItemConfig, IUser } from '@models';
-import { INewBillBodyRequest, INewBillLineItemRequest } from '@routes/api';
+import { INewBillBodyRequest, ICreateLineItemRequest } from '@routes/api';
 import {
     participantService,
     billService,
-    IBillParticipantService,
+    IParticipantService,
     IBillService,
-    lineItemService
+    lineItemService,
+    ILineItemService
 } from '@services';
-import { ILineItemService } from '@services/LineItem';
 import { RequestHandler } from 'express';
 import { Request, Response } from 'express-serve-static-core';
 import { Types } from 'mongoose';
+import { extractLocalResponseValue } from '@common/RequestHelpers';
 
 export interface IBillControllerConfig {
     billService: IBillService;
-    participantService: IBillParticipantService;
-    billLineItemService: ILineItemService;
+    participantService: IParticipantService;
+    lineItemService: ILineItemService;
     errorFactory: ErrorFactoryBase;
 }
 
 class BillController {
 
     private _billService: IBillService;
-    private _participantService: IBillParticipantService;
+    private _participantService: IParticipantService;
     private _lineItemService: ILineItemService;
     private _errorFactory: ErrorFactoryBase;
 
     constructor(config: IBillControllerConfig) {
         this._billService = config.billService;
         this._participantService = config.participantService;
-        this._lineItemService = config.billLineItemService;
+        this._lineItemService = config.lineItemService;
         this._errorFactory = config.errorFactory;
     }
 
@@ -69,7 +70,7 @@ class BillController {
 
     public saveBill: RequestHandler = wrapCatch(async (req, res, next) => {
 
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
         await this._billService.save(bill);
 
@@ -77,9 +78,9 @@ class BillController {
 
     });
 
-    public loadAllLines: RequestHandler = wrapCatch(async (req, res, next) => {
+    public loadAllLinesForBill: RequestHandler = wrapCatch(async (req, res, next) => {
 
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
         (res.locals as IResponseLocals).lines = await this._lineItemService.getAll(bill);
 
@@ -92,7 +93,7 @@ class BillController {
     ): RequestHandler => wrapCatch(async (req, res, next) => {
 
         const lineId = idAccessor(req);
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
         const line = await this._lineItemService.getById(bill, lineId);
 
@@ -143,7 +144,7 @@ class BillController {
 
     public createLine: RequestHandler = wrapCatch(async (req, res, next) => {
 
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
         const lineConfig = this._serializeLineConfig(req.body.line, req.user);
 
@@ -158,7 +159,7 @@ class BillController {
     public splitLine: RequestHandler = wrapCatch(async (req, res, next) => {
 
         const { body: { ways }, params: { lineId } } = req;
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
         (res.locals as IResponseLocals).lines = await this._lineItemService.split(bill, lineId, ways);
 
@@ -169,7 +170,7 @@ class BillController {
     public claimLine: RequestHandler = wrapCatch(async (req, res, next) => {
 
         const { params: { lineId }, user } = req;
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
         (res.locals as IResponseLocals).line = await this._lineItemService.claim(bill, lineId, user);
 
@@ -180,9 +181,9 @@ class BillController {
     public releaseLine: RequestHandler = wrapCatch(async (req, res, next) => {
 
         const { params: { lineId } } = req;
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
-        (res.locals as IResponseLocals).lineUpdates = await this._lineItemService.release(bill, lineId);
+        (res.locals as IResponseLocals).line = await this._lineItemService.release(bill, lineId);
 
         next();
 
@@ -191,25 +192,13 @@ class BillController {
     public joinUserToBill: RequestHandler = wrapCatch(async (req, res, next) => {
 
         const { user } = req;
-        const bill = this._extractLocalValue(res, 'bill');
+        const bill = extractLocalResponseValue(res, 'bill');
 
         (res.locals as IResponseLocals).participant = await this._participantService.create(bill, user);
 
         next();
 
     });
-
-    private _extractLocalValue<T extends keyof IResponseLocals>(res: Response, key: T): Required<IResponseLocals>[T] {
-
-        const value = res.locals[key];
-
-        if (value == null) {
-            throw this._buildLocalNotProvidedError(key);
-        }
-
-        return value;
-
-    }
 
     private _serializeBillConfig(
         { bill: {
@@ -231,7 +220,7 @@ class BillController {
         };
     }
 
-    private _serializeLineConfig(config: INewBillLineItemRequest['line'], user: IUser): ILineItemConfig {
+    private _serializeLineConfig(config: ICreateLineItemRequest['line'], user: IUser): ILineItemConfig {
         // TODO: Extract serialization to validation layer
         return {
             createdBy: user.id,
@@ -251,38 +240,6 @@ class BillController {
         });
     }
 
-    private _buildLocalNotProvidedError(key: keyof IResponseLocals, meta: any = {}): GenericError {
-
-        const recType = this._resolveLocalPropRecTypeString(key);
-
-        return this._errorFactory.build(ErrorCode.INTERNAL_ERROR, {
-            meta,
-            message: `The ${recType} was not properly loaded on the server.`,
-        });
-
-    }
-
-    private _resolveLocalPropRecTypeString(key: keyof IResponseLocals): string {
-
-        switch (key) {
-            case 'bill':
-            case 'bills':
-            case 'billUpdates':
-                return 'bill';
-            case 'line':
-            case 'lines':
-            case 'lineUpdates':
-                return 'line';
-            case 'participant':
-            case 'participants':
-            case 'participantUpdates':
-                return 'participant';
-            default:
-                return 'record';
-        }
-
-    }
-
     private _buildLineItemNotFoundError(billId: Types.ObjectId, lineId: string): GenericError {
         return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
             message: 'The requested line item could not be found.',
@@ -294,7 +251,7 @@ class BillController {
 
 export const billController = new BillController({
     billService,
-    billLineItemService: lineItemService,
-    errorFactory: globalErrorFactory,
     participantService,
+    lineItemService,
+    errorFactory,
 });

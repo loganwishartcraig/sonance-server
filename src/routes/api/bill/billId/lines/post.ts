@@ -1,13 +1,18 @@
 import { billController, validationController } from '@controllers';
 import { ILineItemConfig } from '@models';
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { checkSchema, ValidationParamSchema } from 'express-validator';
-import { INewLineItemRequest } from '@services/LineItem';
+import { ILoadedResponseLocals } from '@common/types';
 
 const router = Router({ mergeParams: true });
 
-export interface ICreateBillLineItemRequest {
-    line: INewLineItemRequest;
+export interface ICreateLineItemRequest {
+    line: {
+        quantity: number;
+        price: number;
+        isShared?: boolean;
+        isClaimed?: boolean;
+    };
 }
 
 export interface INewBillLineItemResponse {
@@ -57,8 +62,18 @@ router.post(
     '/',
     checkSchema(bodySchemaValidation),
     validationController.ensureNoErrors,
-    billController.createLineForBill
+    billController.createLine,
+    billController.saveBill,
+    (_req: Request, res: Response) => {
+
+        const { line } = res.locals as ILoadedResponseLocals;
+
+        const payload = {
+            line: line.toJSON(),
+        };
+
+        res.json(payload);
+    }
 );
 
 export { router as createLineRouter };
-

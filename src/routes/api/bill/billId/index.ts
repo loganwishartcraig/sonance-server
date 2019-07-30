@@ -20,7 +20,6 @@ router.use(
     '/:billId',
     validation,
     validationController.ensureNoErrors,
-    billController.loadBillById,
     routes,
     lineRouter
 );
