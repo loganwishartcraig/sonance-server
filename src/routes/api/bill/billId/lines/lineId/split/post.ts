@@ -15,7 +15,7 @@ export interface ISplitLineResponse {
 }
 
 const validation = [
-    check('ways', 'The number of ways the item is split must be a number greater than 0').isInt({ gt: 0 }),
+    check('ways', 'The number of ways the item is split must be a number greater than 1').isInt({ gt: 1 }),
 ];
 
 router.post(

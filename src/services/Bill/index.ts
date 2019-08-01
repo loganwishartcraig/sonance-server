@@ -42,27 +42,4 @@ export class BillService
         return await this.updateOne({ _id: billId }, updates);
     }
 
-    // public async insertParticipants(
-    //     billId: string | Types.ObjectId,
-    //     configs: IParticipantConfig[]
-    // ): Promise<IParticipant[]> {
-
-    //     const bill = await this.loadOneRaw({ _id: billId });
-
-    //     if (!bill) {
-    //         throw this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND);
-    //     }
-
-    //     const sliceStart = (bill as any).participants.length;
-
-    //     (bill as any).participants.push(...configs);
-
-    //     const participants = (bill as any).participants.slice(sliceStart);
-
-    //     await bill.save();
-
-    //     return participants;
-
-    // }
-
 }

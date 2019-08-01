@@ -1,11 +1,11 @@
+import { validationController } from '@controllers';
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { getLineByIdRouter } from './get';
-import { validationController, billController } from '@controllers';
-import { deleteLineByIdRouter } from './delete';
-import { splitLineRouter } from './split/post';
 import { claimLineRouter } from './claim/post';
+import { deleteLineByIdRouter } from './delete';
+import { getLineByIdRouter } from './get';
 import { releaseLineRouter } from './release/post';
+import { splitLineRouter } from './split/post';
 
 const router = Router({ mergeParams: true });
 
@@ -25,3 +25,4 @@ router.use(
 );
 
 export { router as lineIdRouter };
+

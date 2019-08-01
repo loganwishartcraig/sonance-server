@@ -95,6 +95,8 @@ class BillController {
         const lineId = idAccessor(req);
         const bill = extractLocalResponseValue(res, 'bill');
 
+        console.log('test', { lineId, bill });
+
         const line = await this._lineItemService.getById(bill, lineId);
 
         if (!line) {

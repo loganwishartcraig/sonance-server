@@ -5,6 +5,7 @@ import lineItemSchema from '@schemas/LineItem';
 import participantSchema from '@schemas/Participant';
 import { Schema } from 'mongoose';
 
+// TODO: Remove default shareCode value here
 const billSchema = new Schema<IBillDocument>(
     {
         createdBy: { type: Schema.Types.ObjectId, ref: ModelName.USER, required: true, index: true },
@@ -12,7 +13,7 @@ const billSchema = new Schema<IBillDocument>(
         deletedOn: { type: Date },
         tax: { type: Number, required: true, validate: schemaValidators.gtez('Tax cannot be negative') },
         tip: { type: Number, required: true, validate: schemaValidators.gtez('Tip cannot be negative.') },
-        shareCode: { type: String, required: true },
+        shareCode: { type: String, required: true, default: 'XXXXXX' },
         lines: [lineItemSchema],
         participants: [participantSchema],
     },

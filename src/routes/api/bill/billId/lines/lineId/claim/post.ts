@@ -1,7 +1,6 @@
-import { Router } from 'express';
-import { billController } from '@controllers';
 import { ILoadedResponseLocals } from '@common/types';
-import { resolve } from 'url';
+import { billController } from '@controllers';
+import { Router } from 'express';
 
 const router = Router({ mergeParams: true });
 

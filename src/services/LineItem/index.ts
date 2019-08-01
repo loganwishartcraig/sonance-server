@@ -79,9 +79,11 @@ export class LineItemService implements ILineItemService {
 
         if (!line) throw this._buildLineNotFoundError(bill._id, id);
 
-        // // TODO: Determine how to better implement this
+        // TODO: Determine how to better implement this
+        // TODO: Should quantity be split here too?
+        // TODO: How to resolve lines already claimed?
         const rawSplit = line.price / ways;
-        const splitPrice = Math.round(rawSplit * 100) / 100;
+        const splitPrice = Math.floor(rawSplit * 100) / 100;
         const lastPenny = (rawSplit > splitPrice) ? 0.01 : 0;
 
         const configs: ILineItemConfig[] = [];
@@ -91,6 +93,8 @@ export class LineItemService implements ILineItemService {
             configs.push({
                 ...newConfig,
                 price: (i === ways) ? splitPrice + lastPenny : splitPrice,
+                claimedBy: undefined,
+                claimedOn: undefined,
             });
         }
 
