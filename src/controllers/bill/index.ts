@@ -95,8 +95,6 @@ class BillController {
         const lineId = idAccessor(req);
         const bill = extractLocalResponseValue(res, 'bill');
 
-        console.log('test', { lineId, bill });
-
         const line = await this._lineItemService.getById(bill, lineId);
 
         if (!line) {
@@ -104,6 +102,23 @@ class BillController {
         }
 
         (res.locals as IResponseLocals).line = line;
+
+        next();
+
+    })
+
+    public loadLineByShareCode = (
+        shareCodeAccessor: (req: Request) => string = ({ body: { shareCode } }) => shareCode
+    ): RequestHandler => wrapCatch(async (req, res, next) => {
+
+        const shareCode = shareCodeAccessor(req);
+        const bill = await this._billService.findOne({ shareCode });
+
+        if (!bill) {
+            throw this._buildShareCodeNotFoundError(shareCode);
+        }
+
+        (res.locals as IResponseLocals).bill = bill;
 
         next();
 
@@ -196,7 +211,7 @@ class BillController {
         const { user } = req;
         const bill = extractLocalResponseValue(res, 'bill');
 
-        (res.locals as IResponseLocals).participant = await this._participantService.create(bill, user);
+        (res.locals as IResponseLocals).participant = await this._participantService.addUserToBill(bill, user);
 
         next();
 
@@ -239,6 +254,13 @@ class BillController {
         return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
             message: 'The requested bill could not be found.',
             meta: { billId },
+        });
+    }
+
+    private _buildShareCodeNotFoundError(shareCode: string): GenericError {
+        return this._errorFactory.build(ErrorCode.RECORD_NOT_FOUND, {
+            message: 'The requested bill could not be found.',
+            meta: { shareCode },
         });
     }
 

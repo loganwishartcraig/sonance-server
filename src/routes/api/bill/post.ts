@@ -50,11 +50,13 @@ const bodySchemaValidation: Record<string, ValidationParamSchema> = {
     },
 };
 
+// TODO: Add user as participant
 router.post(
     '/',
     checkSchema(bodySchemaValidation),
     validationController.ensureNoErrors,
     billController.createBill,
+    billController.joinUserToBill,
     billController.saveBill,
     (_: Request, res: Response) => {
 
