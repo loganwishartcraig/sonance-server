@@ -4,11 +4,14 @@ import { UserService } from './User';
 import { AuthenticationService } from './Authentication';
 import { PasswordHashService } from './Authentication/PasswordHash';
 import { PasswordSaltService } from './Authentication/PasswordSalt';
-import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory } from '@models';
+import { userModelFactory, passwordHashModelFactory, passwordSaltModelFactory, billBodyModelFactory, friendRequestModelFactory, friendshipModelFactory } from '@models';
 import { BillService } from './Bill';
 import { globalErrorFactory as errorFactory } from '@common/ErrorFactory';
 import ParticipantService from './Participant';
 import { LineItemService } from './LineItem';
+import { FriendService } from './Friend';
+import { FriendRequestService } from './Friend/FriendRequest';
+import { FriendshipService } from './Friend/Friendship';
 
 require('dotenv').config();
 
@@ -17,6 +20,7 @@ export { IBillService } from './Bill';
 export { ILineItemService } from './LineItem';
 export { IParticipantService } from './Participant';
 export { IUserService } from './User';
+export { IFriendService } from './Friend';
 
 // TODO Extract this into a 'mongoose config' file
 // Sets mongoose configuration flags
@@ -48,3 +52,14 @@ export const authService = new AuthenticationService({
 export const billService = new BillService({ ...genericServiceConfig, modelFactory: billBodyModelFactory });
 export const lineItemService = new LineItemService({ errorFactory });
 export const participantService = new ParticipantService({ errorFactory });
+export const friendService = new FriendService({
+    errorFactory,
+    friendRequestService: new FriendRequestService({
+        ...genericServiceConfig,
+        modelFactory: friendRequestModelFactory,
+    }),
+    friendshipService: new FriendshipService({
+        ...genericServiceConfig,
+        modelFactory: friendshipModelFactory,
+    }),
+});
