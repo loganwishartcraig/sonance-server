@@ -15,7 +15,7 @@ const router = Router();
 
 router.post(
     '/join',
-    billController.loadLineByShareCode(),
+    billController.loadBillByShareCode(),
     billController.joinUserToBill,
     billController.saveBill,
     (_res, req) => {

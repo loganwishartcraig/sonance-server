@@ -1,6 +1,6 @@
 import { ErrorFactoryBase } from '@common/ErrorFactory';
 import { ErrorCode } from '@constants/error_codes';
-import { IBillDocument, IParticipantConfig, IParticipantDocument, IUser } from '@models';
+import { IBillDocument, IParticipantConfig, IParticipantDocument, IUser, IBill, IParticipant } from '@models';
 import { Types } from 'mongoose';
 
 export interface IParticipantService {

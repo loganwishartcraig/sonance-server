@@ -107,7 +107,7 @@ class BillController {
 
     })
 
-    public loadLineByShareCode = (
+    public loadBillByShareCode = (
         shareCodeAccessor: (req: Request) => string = ({ body: { shareCode } }) => shareCode
     ): RequestHandler => wrapCatch(async (req, res, next) => {
 
@@ -151,7 +151,7 @@ class BillController {
 
     public createBill: RequestHandler = wrapCatch(async (req, res, next) => {
 
-        const billConfig = this._serializeBillConfig(req.body, req.user);
+        const billConfig = this._serializeBillConfig(req.body, req.user as IUser);
 
         (res.locals as IResponseLocals).bill = await this._billService.insert(billConfig);
 
@@ -163,7 +163,7 @@ class BillController {
 
         const bill = extractLocalResponseValue(res, 'bill');
 
-        const lineConfig = this._serializeLineConfig(req.body.line, req.user);
+        const lineConfig = this._serializeLineConfig(req.body.line, req.user as IUser);
 
         const [line] = await this._lineItemService.create(bill, [lineConfig]);
 
@@ -189,7 +189,7 @@ class BillController {
         const { params: { lineId }, user } = req;
         const bill = extractLocalResponseValue(res, 'bill');
 
-        (res.locals as IResponseLocals).line = await this._lineItemService.claim(bill, lineId, user);
+        (res.locals as IResponseLocals).line = await this._lineItemService.claim(bill, lineId, user as IUser);
 
         next();
 
@@ -211,7 +211,7 @@ class BillController {
         const { user } = req;
         const bill = extractLocalResponseValue(res, 'bill');
 
-        (res.locals as IResponseLocals).participant = await this._participantService.addUserToBill(bill, user);
+        (res.locals as IResponseLocals).participant = await this._participantService.create(bill, user as IUser);
 
         next();
 
