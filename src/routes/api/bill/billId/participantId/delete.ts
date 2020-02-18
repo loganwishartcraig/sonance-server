@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Response, Request, RequestHandler } from 'express';
 import { check } from 'express-validator';
 import { validationController, billController } from '@controllers';
 import { permissionController } from '@controllers/permission';
@@ -13,14 +13,19 @@ const routes: Router[] = [router.delete(
     '/:participantId',
     validation,
     validationController.ensureNoErrors,
+    billController.loadBillById(),
     permissionController.ensureUserCanRemoveParticipant,
-    billController.removeUserFromBill
+    billController.removeUserFromBill,
+    billController.saveBill,
+    (req: Request, res: Response) => {
+        res.sendStatus(204);
+    }
 )];
 
 router.use(
-    '/participant',
+    '/participants',
     routes,
 );
 
-export { router as joinBillRouter };
+export { router as billParticipantRoutes };
 

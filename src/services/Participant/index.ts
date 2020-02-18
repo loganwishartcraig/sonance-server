@@ -5,7 +5,7 @@ import { Types } from 'mongoose';
 
 export interface IParticipantService {
     create(bill: IBillDocument, user: IUser): Promise<IParticipantDocument>;
-    remove(bill: IBillDocument, userId: string): Promise<void>;
+    remove(bill: IBillDocument, participantId: string): Promise<void>;
 }
 
 /**
@@ -87,9 +87,9 @@ export default class ParticipantService
 
     }
 
-    public async remove(bill: IBillDocument, userId: string): Promise<void> {
+    public async remove(bill: IBillDocument, participantId: string): Promise<void> {
 
-        const existingParticipant = this._findParticipant(bill, userId);
+        const existingParticipant = this._findParticipant(bill, participantId);
 
         if (existingParticipant) {
             bill.participants = bill.participants.pull(existingParticipant);

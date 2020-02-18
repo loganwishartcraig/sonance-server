@@ -1,25 +1,15 @@
 import { ErrorFactoryBase, globalErrorFactory as errorFactory } from '@common/ErrorFactory';
 import { GenericError } from '@common/GenericError';
+import { extractLocalResponseValue } from '@common/RequestHelpers';
 import { IResponseLocals } from '@common/types';
 import { wrapCatch } from '@common/Utilities';
 import { ErrorCode } from '@constants/error_codes';
 import { IBillConfig, ILineItemConfig, IUser } from '@models';
-import { INewBillBodyRequest, ICreateLineItemRequest } from '@routes/api';
-import {
-    participantService,
-    billService,
-    IParticipantService,
-    IBillService,
-    lineItemService,
-    ILineItemService
-} from '@services';
+import { ICreateLineItemRequest, INewBillBodyRequest } from '@routes/api';
+import { billService, IBillService, ILineItemService, IParticipantService, lineItemService, participantService } from '@services';
 import { RequestHandler } from 'express';
-import { Request, Response } from 'express-serve-static-core';
+import { Request } from 'express-serve-static-core';
 import { Types } from 'mongoose';
-import { extractLocalResponseValue } from '@common/RequestHelpers';
-import { RequestListener } from 'http';
-import { IInviteBillRequest } from '@routes/api/bill/billId/invite/post';
-import { resolve } from 'dns';
 
 export interface IBillControllerConfig {
     billService: IBillService;
@@ -222,10 +212,10 @@ class BillController {
 
     public removeUserFromBill: RequestHandler = wrapCatch(async (req, res, next) => {
 
-        const { params: { userId } } = req;
+        const { params: { participantId } } = req;
         const bill = extractLocalResponseValue(res, 'bill');
 
-        await this._participantService.remove(bill, userId);
+        await this._participantService.remove(bill, participantId);
 
         next();
 

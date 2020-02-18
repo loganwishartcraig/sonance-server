@@ -18,7 +18,7 @@ class PermissionController {
 
     public ensureUserCanViewBill: RequestHandler = (req, res, next) => {
 
-        const user: IUser = req.user;
+        const user: IUser = req.user as any;
         const bill = res.locals.bill;
 
         if (!user || !user.id) {
@@ -35,7 +35,7 @@ class PermissionController {
 
     public ensureUserCanRemoveParticipant: RequestHandler = (req, res, next) => {
 
-        const user: IUser = req.user;
+        const user: IUser = req.user as any;
         const bill = res.locals.bill;
 
         if (!user || !user.id) {
@@ -43,7 +43,24 @@ class PermissionController {
         } else if (!bill) {
             next(this._resolveInvalidBillError());
         } else if (!BillBody.userIsParticipant(bill, user)) {
-            next(this._resolveNotAllowedError('You are is not allowed to remove this participant');
+            next(this._resolveNotAllowedError('You are is not allowed to remove this participant'));
+        }
+
+        next();
+
+    }
+
+    public ensureUserCanDeleteBill: RequestHandler = (req, res, next) => {
+
+        const user: IUser = req.user as any;
+        const bill = res.locals.bill;
+
+        if (!user || !user.id) {
+            next(this._resolveInvalidUserError());
+        } else if (!bill) {
+            next(this._resolveInvalidBillError());
+        } else if (!BillBody.createdByUser(bill, user)) {
+            next(this._resolveNotAllowedError('You are is not allowed to delete this bill'));
         }
 
         next();

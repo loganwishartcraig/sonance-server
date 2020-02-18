@@ -4,6 +4,7 @@ import { check } from 'express-validator';
 import { deleteBillRoute } from './delete';
 import { getBillRouter } from './get';
 import { lineRouter } from './lines';
+import { billParticipantRoutes } from './participantId/delete';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use(
     validation,
     validationController.ensureNoErrors,
     routes,
+    billParticipantRoutes,
     lineRouter
 );
 
