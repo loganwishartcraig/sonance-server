@@ -1,7 +1,7 @@
+import { ILoadedResponseLocals } from '@common/types';
 import { billController } from '@controllers';
 import { IBill } from '@models';
-import { Router, Response, Request } from 'express';
-import { IResponseLocals, ILoadedResponseLocals } from '@common/types';
+import { Request, Response, Router } from 'express';
 
 export interface IGetBillBodyResponse {
     bill: IBill;
@@ -26,3 +26,4 @@ router.get(
 );
 
 export { router as getBillRouter };
+

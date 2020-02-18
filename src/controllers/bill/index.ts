@@ -17,6 +17,9 @@ import { RequestHandler } from 'express';
 import { Request, Response } from 'express-serve-static-core';
 import { Types } from 'mongoose';
 import { extractLocalResponseValue } from '@common/RequestHelpers';
+import { RequestListener } from 'http';
+import { IInviteBillRequest } from '@routes/api/bill/billId/invite/post';
+import { resolve } from 'dns';
 
 export interface IBillControllerConfig {
     billService: IBillService;
@@ -212,6 +215,17 @@ class BillController {
         const bill = extractLocalResponseValue(res, 'bill');
 
         (res.locals as IResponseLocals).participant = await this._participantService.create(bill, user as IUser);
+
+        next();
+
+    });
+
+    public removeUserFromBill: RequestHandler = wrapCatch(async (req, res, next) => {
+
+        const { params: { userId } } = req;
+        const bill = extractLocalResponseValue(res, 'bill');
+
+        await this._participantService.remove(bill, userId);
 
         next();
 

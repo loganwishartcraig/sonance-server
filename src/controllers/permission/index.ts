@@ -33,6 +33,23 @@ class PermissionController {
 
     }
 
+    public ensureUserCanRemoveParticipant: RequestHandler = (req, res, next) => {
+
+        const user: IUser = req.user;
+        const bill = res.locals.bill;
+
+        if (!user || !user.id) {
+            next(this._resolveInvalidUserError());
+        } else if (!bill) {
+            next(this._resolveInvalidBillError());
+        } else if (!BillBody.userIsParticipant(bill, user)) {
+            next(this._resolveNotAllowedError('You are is not allowed to remove this participant');
+        }
+
+        next();
+
+    }
+
     private _resolveInvalidBillError(): GenericError {
         return this._errorFactory.build(ErrorCode.UNKNOWN_ERROR, {
             message: 'No bill was provided to check permissions against.',

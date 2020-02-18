@@ -1,8 +1,8 @@
+import { validationController } from '@controllers';
 import { Router } from 'express';
-import { getBillRouter } from './get';
-import { deleteBillRoute } from './delete';
 import { check } from 'express-validator';
-import { validationController, billController } from '@controllers';
+import { deleteBillRoute } from './delete';
+import { getBillRouter } from './get';
 import { lineRouter } from './lines';
 
 const router = Router();
@@ -25,3 +25,4 @@ router.use(
 );
 
 export { router as billIdRoutes };
+
